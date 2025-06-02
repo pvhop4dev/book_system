@@ -1,0 +1,29 @@
+port: 8080
+
+grpc:
+  port: 50051
+
+database:
+  mysql:
+    host: localhost
+    port: 3306
+    user: root
+    password: root
+    database: book_system
+
+redis:
+  host: localhost
+  port: 6379
+  user: root
+  password: root
+  database: book_system
+
+minio:
+  host: localhost
+  port: 9000
+  access-key: root
+  secret-key: root
+  location: us-east-1
+  default-bucket: book-system
+  secure: false
+  return-url: http://localhost:8080
