@@ -17,6 +17,6 @@ func init() {
 	}))
 }
 
-func GetValidate() *validator.Validate {
-	return Validate
-}
+// func GetValidate() *validator.Validate {
+// 	return Validate
+// }

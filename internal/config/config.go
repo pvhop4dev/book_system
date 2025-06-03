@@ -2,34 +2,15 @@ package config
 
 import (
 	"log/slog"
+	"sync"
 
 	"github.com/spf13/viper"
 )
 
-var config Config
-
-func init() {
-	viper.SetConfigFile("config.yaml")
-	if err := viper.ReadInConfig(); err != nil {
-		slog.Error("read config", "err", err)
-		panic(err)
-	}
-
-	if err := viper.Unmarshal(&config); err != nil {
-		slog.Error("unmarshal config", "err", err)
-		panic(err)
-	}
-
-	slog.Info("read config", "config", config)
-}
-
-func GetConfig() Config {
-	return config
-}
-
-type Config struct {
-	Port string `mapstructure:"port"`
-	Grpc struct {
+type config struct {
+	Environment string `mapstructure:"environment"`
+	Port        string `mapstructure:"port"`
+	Grpc        struct {
 		Port string `mapstructure:"port"`
 	}
 	Database struct {
@@ -56,6 +37,57 @@ type Config struct {
 		Location      string `mapstructure:"location"`
 		DefaultBucket string `mapstructure:"default-bucket"`
 		Secure        bool   `mapstructure:"secure"`
-		ReturnUrl     string `mapstructure:"return-url"`
+		ReturnURL     string `mapstructure:"return-url"`
 	}
+}
+
+var (
+	once     sync.Once
+	instance *config
+)
+
+func setDefault() {
+	viper.SetDefault("port", "8888")
+	viper.SetDefault("database.mysql.host", "default")
+	viper.SetDefault("database.mysql.port", "default")
+	viper.SetDefault("database.mysql.user", "default")
+	viper.SetDefault("database.mysql.password", "default")
+	viper.SetDefault("database.mysql.database", "default")
+	viper.SetDefault("grpc.port", "default")
+}
+
+// Initialize loads and validates the configuration.
+// It's safe to call this function multiple times, but the configuration
+// will only be loaded once.
+func init() {
+	once.Do(func() {
+		setDefault()
+		viper.SetConfigFile("config.yaml")
+		if err := viper.ReadInConfig(); err != nil {
+			slog.Error("failed to read config file", "error", err)
+			panic(err)
+		}
+
+		var cfg config
+		if err := viper.Unmarshal(&cfg); err != nil {
+			slog.Error("failed to unmarshal config", "error", err)
+			panic(err)
+		}
+
+		instance = &cfg
+		slog.Info("configuration loaded successfully")
+	})
+}
+
+func get() *config {
+	if instance == nil {
+		panic("config not initialized, call Initialize() first")
+	}
+	return instance
+}
+
+// MustGet is like Get but returns a non-pointer value.
+// It's useful for making the configuration read-only.
+func MustGet() config {
+	return *get()
 }
