@@ -3,9 +3,11 @@ package infrastructure
 import (
 	"context"
 	"errors"
+	"fmt"
 	"mime/multipart"
 	"net/url"
 	"path/filepath"
+	"sync"
 	"time"
 
 	"book_system/internal/config"
@@ -20,7 +22,18 @@ var (
 	minioClient   *minio.Client
 	defaultBucket string
 	returnURL     string
+	initMinioOnce sync.Once
 )
+
+func init() {
+	initMinioOnce.Do(func() {
+		err := InitMinio()
+		if err != nil {
+			log.Error().Err(err).Msg("failed to initialize MinIO client")
+			panic(err)
+		}
+	})
+}
 
 // InitMinio initializes the MinIO client with configuration from viper
 func InitMinio() error {
@@ -144,21 +157,22 @@ func GetFile(ctx context.Context, objectName string) (*minio.Object, error) {
 // DeleteFile deletes a file from MinIO
 func DeleteFile(ctx context.Context, objectName string) error {
 	if minioClient == nil {
-		return errors.New("minio client not initialized")
+		return errors.New("MinIO client not initialized")
 	}
 
-	// Check if the object exists first
-	_, err := minioClient.StatObject(ctx, defaultBucket, objectName, minio.StatObjectOptions{})
+	bucket := GetDefaultBucket()
+	_, err := minioClient.StatObject(ctx, bucket, objectName, minio.StatObjectOptions{})
 	if err != nil {
-		return err
+		if minio.ToErrorResponse(err).Code == "NoSuchKey" {
+			return nil // File doesn't exist, consider this a success
+		}
+		return fmt.Errorf("failed to check file existence: %w", err)
 	}
 
-	// Delete the object
-	err = minioClient.RemoveObject(ctx, defaultBucket, objectName, minio.RemoveObjectOptions{})
+	err = minioClient.RemoveObject(ctx, bucket, objectName, minio.RemoveObjectOptions{})
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to delete file: %w", err)
 	}
-
 	return nil
 }
 
@@ -200,6 +214,14 @@ func GetDefaultBucket() string {
 // Close closes the MinIO client connection
 func Close() error {
 	// MinIO client doesn't have a close method
-	// This is just a placeholder for consistency with other infrastructure components
 	return nil
+}
+
+// GetFileURL generates a URL for a single file
+func GetFileURL(ctx context.Context, objectName string) (string, error) {
+	url, err := GeneratePresignedURL(ctx, objectName, 24*time.Hour)
+	if err != nil {
+		return "", err
+	}
+	return url.String(), nil
 }
