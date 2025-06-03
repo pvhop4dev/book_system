@@ -4,6 +4,9 @@ port: 8080
 grpc:
   port: 50051
 
+rate_limiter:
+  burst: 10
+  rate: 1
 database:
   mysql:
     host: localhost

@@ -13,6 +13,16 @@ type config struct {
 	Grpc        struct {
 		Port string `mapstructure:"port"`
 	}
+	RateLimiter struct {
+		Burst int `mapstructure:"burst"`
+		Rate  int `mapstructure:"rate"`
+	}
+	Codec struct {
+		SecretKey uint32 `mapstructure:"secret-key"`
+	}
+	Casbin struct {
+		DSN string `mapstructure:"dsn"`
+	}
 	Database struct {
 		Mysql struct {
 			Host     string `mapstructure:"host"`

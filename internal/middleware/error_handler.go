@@ -90,3 +90,9 @@ var FieldInvalid = Error{
 	Message:  "field_invalid",
 	I18nData: map[string]string{"field": "field"},
 }
+
+var TooManyRequests = Error{
+	Code:     429,
+	Message:  "too_many_requests",
+	I18nData: map[string]string{},
+}

@@ -154,14 +154,14 @@ func GetCurrentPartnerId(c *gin.Context) string {
 }
 
 func GetCurrentTraceID(c *gin.Context) string {
-	id := c.Request.Header["Trace-Id"]
-	if len(id) > 0 {
-		return id[0]
+	traceID, ok := c.Get("trace_id")
+	if ok {
+		return traceID.(string)
 	}
 	return ""
 }
 func SetTraceID(c *gin.Context, traceID string) {
-	c.Request.Header.Set("Trace-Id", traceID)
+	c.Set("trace_id", traceID)
 }
 
 func GetCurrentProfileId(c *gin.Context) string {

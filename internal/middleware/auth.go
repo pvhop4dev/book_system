@@ -1,10 +1,13 @@
 package middleware
 
 import (
+	"book_system/internal/config"
 	"book_system/internal/utils"
 	"net/http"
 	"strings"
 
+	"github.com/casbin/casbin/v2"
+	xormadapter "github.com/casbin/xorm-adapter/v2"
 	"github.com/gin-gonic/gin"
 )
 
@@ -20,5 +23,48 @@ func Authorizator(authority ...string) gin.HandlerFunc {
 			c.Abort()
 			return
 		}
+	}
+}
+
+var e *casbin.Enforcer
+var err error
+
+func init() {
+	adapter, err := xormadapter.NewAdapter("mysql", config.MustGet().Casbin.DSN)
+	if err != nil {
+		panic(err)
+	}
+	e, err = casbin.NewEnforcer("casbin/model.conf", adapter)
+	if err != nil {
+		panic(err)
+	}
+	err = e.LoadPolicy()
+	if err != nil {
+		panic(err)
+	}
+}
+
+func Authorize() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		sub := c.GetString("user")
+		obj := c.Request.URL.Path
+		act := c.Request.Method
+
+		ok, err := e.Enforce(sub, obj, act)
+		if err != nil {
+			errType := InternalServerError
+			c.JSON(http.StatusInternalServerError, gin.H{"code": errType.Code, "message": errType.GetMesssageI18n(utils.GetCurrentLang(c))})
+			c.Abort()
+			return
+		}
+
+		if !ok {
+			errType := Forbidden
+			c.JSON(http.StatusForbidden, gin.H{"code": errType.Code, "message": errType.GetMesssageI18n(utils.GetCurrentLang(c))})
+			c.Abort()
+			return
+		}
+
+		c.Next()
 	}
 }

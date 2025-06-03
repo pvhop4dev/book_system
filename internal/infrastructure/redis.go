@@ -90,7 +90,6 @@ func HealthCheck() error {
 	if redisClient == nil {
 		return nil
 	}
-
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
 
