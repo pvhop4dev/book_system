@@ -57,8 +57,8 @@ func InitRedis() (*redis.Client, error) {
 		}
 
 		slog.Info("Successfully connected to Redis",
-			"host", cfg.Redis.Host,
-			"port", cfg.Redis.Port)
+			slog.String("host", cfg.Redis.Host),
+			slog.String("port", cfg.Redis.Port))
 	})
 
 	return redisClient, redisErr

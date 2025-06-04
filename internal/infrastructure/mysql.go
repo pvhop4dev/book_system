@@ -30,7 +30,7 @@ func InitDB() (*gorm.DB, error) {
 			cfg.Database.Mysql.Database,
 		)
 
-		slog.Info("Connecting to MySQL...", "dsn", dsn)
+		slog.Info("Connecting to MySQL...", slog.String("dsn", dsn))
 
 		gormConfig := &gorm.Config{
 			Logger: logger.Default.LogMode(logger.Info), // Change to logger.Silent in production
