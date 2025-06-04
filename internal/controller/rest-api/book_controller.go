@@ -1,9 +1,9 @@
 package restapi
 
 import (
+	"book_system/internal/controller/response"
 	"book_system/internal/model/dto"
 	"book_system/internal/service"
-	"book_system/pkg/response"
 	"log/slog"
 	"net/http"
 	"strconv"

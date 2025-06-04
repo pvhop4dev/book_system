@@ -2,7 +2,7 @@ package restapi
 
 import (
 	"book_system/internal/config"
-	"book_system/internal/controller/rest-api/middleware"
+	"book_system/internal/controller/middleware"
 	"book_system/internal/repository"
 	book_service "book_system/internal/service/book_service"
 	token_service "book_system/internal/service/token_service"
