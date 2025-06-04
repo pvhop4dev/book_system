@@ -6,3 +6,7 @@ run-test:
 
 gen-doc:
 	swag init --parseDependency --parseInternal -g cmd/main.go
+
+check-vuln:
+	go install golang.org/x/vuln/cmd/govulncheck@latest
+	govulncheck ./...

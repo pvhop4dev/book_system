@@ -36,6 +36,11 @@
 - Thiếu mô tả chi tiết về các API
 
 # Đề xuất cải thiện
+## Performance:
+- [ ] Cân nhắc sử dụng connection pooling
+- [ ] Redis Caching
+- [ ] Gắn context vào trace-ID
+
 ## Tài liệu:
 - [ ] Thêm API documentation với Swagger
 - [ ] Viết README hướng dẫn cấu hình và chạy
@@ -49,10 +54,12 @@
 - [ ] Thêm validation cho cấu hình
 
 ## Giám sát:
+- [ ] Thêm trace-ID for restapi, grpc
 - [ ] Thêm metrics và monitoring
 - [ ] Tích hợp với các công cụ theo dõi hiệu năng
 
 ## Bảo mật:
+- [ ] Thêm external, internal ID
 - [ ] Thêm rate limiting
 - [ ] Xử lý CORS đúng cách
 - [ ] Validate input kỹ hơn

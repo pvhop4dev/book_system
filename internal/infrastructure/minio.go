@@ -34,6 +34,9 @@ func init() {
 		}
 	})
 }
+func GetMinioClient() *minio.Client {
+	return minioClient
+}
 
 // InitMinio initializes the MinIO client with configuration from viper
 func InitMinio() error {
@@ -199,11 +202,6 @@ func GeneratePresignedURL(ctx context.Context, objectName string, expiry time.Du
 	}
 
 	return presignedURL, nil
-}
-
-// GetMinioClient returns the MinIO client instance
-func GetMinioClient() *minio.Client {
-	return minioClient
 }
 
 // GetDefaultBucket returns the default bucket name

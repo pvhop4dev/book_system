@@ -2,6 +2,7 @@ package restapi
 
 import (
 	"book_system/internal/config"
+	"book_system/internal/infrastructure"
 	"book_system/internal/repository"
 	book_service "book_system/internal/service/book_service"
 	token_service "book_system/internal/service/token_service"
@@ -25,9 +26,50 @@ func NewRouter(db *gorm.DB) *Router {
 }
 
 func (r *Router) SetupRoutes(router *gin.Engine) {
-	// Health check
+	// Initialize health check with database connection
+	db, err := r.db.DB()
+	if err != nil {
+		// Log error but continue, health check will show database as down
+		gin.DefaultWriter.Write([]byte("Failed to get database connection for health check: " + err.Error() + "\n"))
+	}
+
+	// Get Redis client if available
+	var redisClient interface{} = nil
+	if r := infrastructure.GetRedis(); r != nil {
+		redisClient = r
+	}
+
+	// Get MinIO client if available
+	var minioClient interface{} = nil
+	if m := infrastructure.GetMinioClient(); m != nil {
+		minioClient = m
+	}
+
+	// Initialize health check with all dependencies
+	healthConfig = &HealthConfig{
+		DB:          db,
+		RedisClient: redisClient,
+		MinioClient: minioClient,
+		Version:     "1.0.0",
+		StartTime:   time.Now(),
+	}
+
+	// Global middleware
 	router.Use(middleware.GlobalRecover)
-	router.GET("/health", HealthCheckHandler)
+
+	// Health check endpoints
+	healthGroup := router.Group("")
+	{
+		healthGroup.GET("/health", func(c *gin.Context) {
+			healthCheckHandler(c, false, false)
+		})
+		healthGroup.GET("/health/live", func(c *gin.Context) {
+			healthCheckHandler(c, true, false)
+		})
+		healthGroup.GET("/health/ready", func(c *gin.Context) {
+			healthCheckHandler(c, false, true)
+		})
+	}
 
 	// Swagger
 	r.setupSwagger(router)
