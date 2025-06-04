@@ -9,7 +9,7 @@ import (
 
 type config struct {
 	Environment string `mapstructure:"environment"`
-	Port        string `mapstructure:"port"`
+	Port        uint32 `mapstructure:"port"`
 	Grpc        struct {
 		Port string `mapstructure:"port"`
 	}
