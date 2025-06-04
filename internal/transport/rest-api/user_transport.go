@@ -9,12 +9,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type UserController struct {
+type Usertransport struct {
 	userService service.IUserService
 }
 
-func NewUserController(userService service.IUserService) *UserController {
-	return &UserController{
+func NewUsertransport(userService service.IUserService) *Usertransport {
+	return &Usertransport{
 		userService: userService,
 	}
 }
@@ -30,7 +30,7 @@ func NewUserController(userService service.IUserService) *UserController {
 // @Failure 400 {object} map[string]interface{}
 // @Failure 500 {object} map[string]interface{}
 // @Router /api/v1/auth/register [post]
-func (uc *UserController) Register(c *gin.Context) {
+func (uc *Usertransport) Register(c *gin.Context) {
 	var req dto.RegisterRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
@@ -57,7 +57,7 @@ func (uc *UserController) Register(c *gin.Context) {
 // @Failure 400 {object} map[string]interface{}
 // @Failure 401 {object} map[string]interface{}
 // @Router /api/v1/auth/login [post]
-func (uc *UserController) Login(c *gin.Context) {
+func (uc *Usertransport) Login(c *gin.Context) {
 	var req dto.LoginRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
@@ -83,7 +83,7 @@ func (uc *UserController) Login(c *gin.Context) {
 // @Failure 401 {object} map[string]interface{}
 // @Failure 404 {object} map[string]interface{}
 // @Router /api/v1/users/me [get]
-func (uc *UserController) GetUserProfile(c *gin.Context) {
+func (uc *Usertransport) GetUserProfile(c *gin.Context) {
 	userID, exists := c.Get("userID")
 	if !exists {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
@@ -111,7 +111,7 @@ func (uc *UserController) GetUserProfile(c *gin.Context) {
 // @Failure 400 {object} map[string]interface{}
 // @Failure 401 {object} map[string]interface{}
 // @Router /api/v1/users/me [put]
-func (uc *UserController) UpdateUserProfile(c *gin.Context) {
+func (uc *Usertransport) UpdateUserProfile(c *gin.Context) {
 	userID, exists := c.Get("userID")
 	if !exists {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
@@ -144,7 +144,7 @@ func (uc *UserController) UpdateUserProfile(c *gin.Context) {
 // @Success 200 {object} map[string]interface{}
 // @Failure 401 {object} map[string]interface{}
 // @Router /api/v1/users [get]
-func (uc *UserController) ListUsers(c *gin.Context) {
+func (uc *Usertransport) ListUsers(c *gin.Context) {
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
 	pageSize, _ := strconv.Atoi(c.DefaultQuery("page_size", "10"))
 
@@ -176,7 +176,7 @@ func (uc *UserController) ListUsers(c *gin.Context) {
 // @Failure 400 {object} map[string]interface{}
 // @Failure 401 {object} map[string]interface{}
 // @Router /api/v1/auth/refresh [post]
-func (uc *UserController) RefreshToken(c *gin.Context) {
+func (uc *Usertransport) RefreshToken(c *gin.Context) {
 	var req dto.RefreshTokenRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})

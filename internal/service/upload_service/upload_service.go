@@ -8,22 +8,13 @@ import (
 	"net/textproto"
 	"os"
 	"path/filepath"
-
-	"github.com/minio/minio-go/v7"
 )
 
 type uploadService struct {
-	minioClient   *minio.Client
-	defaultBucket string
-	returnURL     string
 }
 
-func NewUploadService(minioClient *minio.Client, defaultBucket string, returnURL string) *uploadService {
-	return &uploadService{
-		minioClient:   minioClient,
-		defaultBucket: defaultBucket,
-		returnURL:     returnURL,
-	}
+func NewUploadService() *uploadService {
+	return &uploadService{}
 }
 
 func (s *uploadService) UploadFile(ctx context.Context, fileHeader *multipart.FileHeader, customPath ...string) (string, error) {

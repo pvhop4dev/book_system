@@ -1,9 +1,9 @@
 package restapi
 
 import (
-	"book_system/internal/controller/response"
 	"book_system/internal/model/dto"
 	"book_system/internal/service"
+	"book_system/internal/transport/response"
 	"log/slog"
 	"net/http"
 	"strconv"
@@ -11,14 +11,14 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// BookController handles book related HTTP requests
-type BookController struct {
+// Booktransport handles book related HTTP requests
+type Booktransport struct {
 	bookService service.IBookService
 }
 
-// NewBookController creates a new book controller
-func NewBookController(bookService service.IBookService) *BookController {
-	return &BookController{
+// NewBooktransport creates a new book transport
+func NewBooktransport(bookService service.IBookService) *Booktransport {
+	return &Booktransport{
 		bookService: bookService,
 	}
 }
@@ -35,7 +35,7 @@ func NewBookController(bookService service.IBookService) *BookController {
 // @Failure 409 {object} response.APIResponse "Book with this ISBN already exists"
 // @Failure 500 {object} response.APIResponse "Internal server error"
 // @Router /api/v1/books [post]
-func (c *BookController) CreateBook(ctx *gin.Context) {
+func (c *Booktransport) CreateBook(ctx *gin.Context) {
 	var req dto.CreateBookRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		response.BadRequest(ctx, "Invalid request body")
@@ -74,7 +74,7 @@ func (c *BookController) CreateBook(ctx *gin.Context) {
 // @Failure 404 {object} response.APIResponse "Book not found"
 // @Failure 500 {object} response.APIResponse "Internal server error"
 // @Router /api/v1/books/{id} [get]
-func (c *BookController) GetBookByID(ctx *gin.Context) {
+func (c *Booktransport) GetBookByID(ctx *gin.Context) {
 	id := ctx.Param("id")
 	if id == "" {
 		response.BadRequest(ctx, "Book ID is required")
@@ -108,7 +108,7 @@ func (c *BookController) GetBookByID(ctx *gin.Context) {
 // @Failure 400 {object} response.APIResponse "Invalid query parameters"
 // @Failure 500 {object} response.APIResponse "Internal server error"
 // @Router /api/v1/books [get]
-func (c *BookController) ListBooks(ctx *gin.Context) {
+func (c *Booktransport) ListBooks(ctx *gin.Context) {
 	// Parse pagination parameters
 	page, _ := strconv.Atoi(ctx.DefaultQuery("page", "1"))
 	pageSize, _ := strconv.Atoi(ctx.DefaultQuery("page_size", "10"))
@@ -144,7 +144,7 @@ func (c *BookController) ListBooks(ctx *gin.Context) {
 // @Failure 409 {object} response.APIResponse "Book with this ISBN already exists"
 // @Failure 500 {object} response.APIResponse "Internal server error"
 // @Router /api/v1/books/{id} [put]
-func (c *BookController) UpdateBook(ctx *gin.Context) {
+func (c *Booktransport) UpdateBook(ctx *gin.Context) {
 	id := ctx.Param("id")
 	if id == "" {
 		response.BadRequest(ctx, "Book ID is required")
@@ -192,7 +192,7 @@ func (c *BookController) UpdateBook(ctx *gin.Context) {
 // @Failure 404 {object} response.APIResponse "Book not found"
 // @Failure 500 {object} response.APIResponse "Internal server error"
 // @Router /api/v1/books/{id} [delete]
-func (c *BookController) DeleteBook(ctx *gin.Context) {
+func (c *Booktransport) DeleteBook(ctx *gin.Context) {
 	id := ctx.Param("id")
 	if id == "" {
 		response.BadRequest(ctx, "Book ID is required")

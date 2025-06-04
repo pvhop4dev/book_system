@@ -2,12 +2,12 @@ package restapi
 
 import (
 	"book_system/internal/config"
-	"book_system/internal/controller/middleware"
 	"book_system/internal/repository"
 	book_service "book_system/internal/service/book_service"
 	token_service "book_system/internal/service/token_service"
 	upload_service "book_system/internal/service/upload_service"
 	user_service "book_system/internal/service/user_service"
+	"book_system/internal/transport/middleware"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -16,18 +16,16 @@ import (
 )
 
 type Router struct {
+	db *gorm.DB
+
 	minioClient   *minio.Client
 	defaultBucket string
 	returnURL     string
-	db            *gorm.DB
 }
 
-func NewRouter(minioClient *minio.Client, defaultBucket, returnURL string, db *gorm.DB) *Router {
+func NewRouter(db *gorm.DB) *Router {
 	return &Router{
-		minioClient:   minioClient,
-		defaultBucket: defaultBucket,
-		returnURL:     returnURL,
-		db:            db,
+		db: db,
 	}
 }
 
@@ -53,12 +51,12 @@ func (r *Router) SetupRoutes(router *gin.Engine) {
 
 	userService := user_service.NewUserService(userRepo, tokenSvc)
 	bookService := book_service.NewBookService(bookRepo)
-	uploadService := upload_service.NewUploadService(r.minioClient, r.defaultBucket, r.returnURL)
+	uploadService := upload_service.NewUploadService()
 
-	// Initialize controllers
-	userController := NewUserController(userService)
-	bookController := NewBookController(bookService)
-	uploadController := NewUploadController(uploadService)
+	// Initialize transports
+	usertransport := NewUsertransport(userService)
+	booktransport := NewBooktransport(bookService)
+	uploadtransport := NewUploadtransport(uploadService)
 
 	// Public routes
 	v1 := router.Group("/api/v1")
@@ -66,40 +64,40 @@ func (r *Router) SetupRoutes(router *gin.Engine) {
 		// Auth routes
 		authGroup := v1.Group("/auth")
 		{
-			authGroup.POST("/register", userController.Register)
-			authGroup.POST("/login", userController.Login)
-			authGroup.POST("/refresh", userController.RefreshToken)
+			authGroup.POST("/register", usertransport.Register)
+			authGroup.POST("/login", usertransport.Login)
+			authGroup.POST("/refresh", usertransport.RefreshToken)
 		}
 
 		// File upload routes
 		filesGroup := v1.Group("/files")
 		filesGroup.Use(middleware.AuthMiddleware(tokenSvc))
 		{
-			filesGroup.POST("/upload", uploadController.UploadFile)
-			filesGroup.POST("/upload/multiple", uploadController.UploadMultipleFiles)
-			filesGroup.GET("/:filename", uploadController.GetFile)
-			filesGroup.DELETE("/:filename", uploadController.DeleteFile)
-			filesGroup.GET("/:filename/url", uploadController.GetFileURL)
+			filesGroup.POST("/upload", uploadtransport.UploadFile)
+			filesGroup.POST("/upload/multiple", uploadtransport.UploadMultipleFiles)
+			filesGroup.GET("/:filename", uploadtransport.GetFile)
+			filesGroup.DELETE("/:filename", uploadtransport.DeleteFile)
+			filesGroup.GET("/:filename/url", uploadtransport.GetFileURL)
 		}
 
 		// User routes (protected)
 		usersGroup := v1.Group("/users")
 		usersGroup.Use(middleware.AuthMiddleware(tokenSvc))
 		{
-			usersGroup.GET("/me", userController.GetUserProfile)
-			usersGroup.PUT("/me", userController.UpdateUserProfile)
-			usersGroup.GET("", userController.ListUsers)
+			usersGroup.GET("/me", usertransport.GetUserProfile)
+			usersGroup.PUT("/me", usertransport.UpdateUserProfile)
+			usersGroup.GET("", usertransport.ListUsers)
 		}
 
 		// Book routes (protected)
 		booksGroup := v1.Group("/books")
 		booksGroup.Use(middleware.AuthMiddleware(tokenSvc))
 		{
-			booksGroup.POST("", bookController.CreateBook)
-			booksGroup.GET("", bookController.ListBooks)
-			booksGroup.GET("/:id", bookController.GetBookByID)
-			booksGroup.PUT("/:id", bookController.UpdateBook)
-			booksGroup.DELETE("/:id", bookController.DeleteBook)
+			booksGroup.POST("", booktransport.CreateBook)
+			booksGroup.GET("", booktransport.ListBooks)
+			booksGroup.GET("/:id", booktransport.GetBookByID)
+			booksGroup.PUT("/:id", booktransport.UpdateBook)
+			booksGroup.DELETE("/:id", booktransport.DeleteBook)
 		}
 	}
 }
