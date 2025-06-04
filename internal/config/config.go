@@ -13,6 +13,12 @@ type config struct {
 	Grpc        struct {
 		Port string `mapstructure:"port"`
 	}
+	JWT struct {
+		AccessSecret  string `mapstructure:"access-secret"`
+		RefreshSecret string `mapstructure:"refresh-secret"`
+		AccessExpiry  int    `mapstructure:"access-expiry"`
+		RefreshExpiry int    `mapstructure:"refresh-expiry"`
+	}
 	RateLimiter struct {
 		Burst int `mapstructure:"burst"`
 		Rate  int `mapstructure:"rate"`
