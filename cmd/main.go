@@ -16,17 +16,11 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	_ "github.com/go-sql-driver/mysql"
 	"gorm.io/gorm"
 )
 
-// var (
-// 	minioClient *minio.Client
-// )
-
-func init() {
-	i18n.InitI18n([]string{"vi", "en"})
-
-	// Create a new JSON logger with custom source handler
+func initLogger() {
 	handler := &infrastructure.CustomSourceHandler{
 		Handler: slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
 			Level:     slog.LevelInfo,
@@ -42,15 +36,41 @@ func init() {
 
 	// Set the default logger
 	slog.SetDefault(logger)
-	slog.Info("--------------------------------------------STARTING!--------------------------------------------")
 }
 
-func initDB() (*gorm.DB, error) {
+func initDB() *gorm.DB {
 	db, err := infrastructure.InitDB()
 	if err != nil {
-		return nil, fmt.Errorf("failed to connect to database: %w", err)
+		slog.Error("Failed to InitDB", "error", err)
+		os.Exit(1)
 	}
-	return db, nil
+	sqlDB, _ := db.DB()
+	defer func() {
+		if err := sqlDB.Close(); err != nil {
+			slog.Error("Failed to close database connection", "error", err)
+			return
+		}
+		slog.Info("Database connection closed")
+	}()
+
+	// Kiểm tra kết nối
+	if err := sqlDB.Ping(); err != nil {
+		slog.Error("Failed to ping database", "error", err)
+		os.Exit(1)
+	}
+	slog.Info("Database connected successfully")
+
+	return db
+}
+func initI18n() {
+	i18n.InitI18n([]string{"vi", "en"})
+}
+func configGin() {
+	if config.MustGet().Environment == "production" {
+		gin.SetMode(gin.ReleaseMode)
+	} else {
+		gin.SetMode(gin.DebugMode)
+	}
 }
 
 // @title Book System API
@@ -68,62 +88,62 @@ func initDB() (*gorm.DB, error) {
 // @in header
 // @name Authorization
 func main() {
-	// Initialize database
-	db, err := initDB()
-	if err != nil {
-		slog.Error("Failed to initialize database", "error", err)
-		os.Exit(1)
-	}
+	// Tạo context để lắng nghe tín hiệu dừng
+	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+	defer stop()
 
-	// Set Gin mode
-	if config.MustGet().Environment == "production" {
-		gin.SetMode(gin.ReleaseMode)
-	} else {
-		gin.SetMode(gin.DebugMode)
-	}
+	initI18n()
+	configGin()
+	initLogger()
 
-	// Create Gin router
+	db := initDB()
+
+	// Tạo router và cấu hình routes
 	router := gin.New()
-
-	// Initialize API router
-	apiRouter := restapi.NewRouter(
-		db,
-	)
-
-	// Setup routes
+	apiRouter := restapi.NewRouter(db)
 	apiRouter.SetupRoutes(router)
 
-	// Start server
-	port := fmt.Sprintf(":%d", config.MustGet().Port)
+	// Cấu hình server
+	serverPort := config.MustGet().Port
 	server := &http.Server{
-		Addr:         port,
-		Handler:      router,
-		ReadTimeout:  30 * time.Second,
-		WriteTimeout: 30 * time.Second,
+		Addr:    fmt.Sprintf(":%d", serverPort),
+		Handler: router,
+
+		ReadTimeout:  15 * time.Second,
+		WriteTimeout: 15 * time.Second,
+		IdleTimeout:  60 * time.Second,
 	}
 
-	// Graceful shutdown
+	// Channel để bắt lỗi từ server
+	serverErr := make(chan error, 1)
+
+	// Chạy server trong goroutine riêng
 	go func() {
-		slog.Info(fmt.Sprintf("Server is running on port %s", port))
+		slog.Info(fmt.Sprintf("Server is starting on port %d", serverPort))
 		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			slog.Error("Failed to start server", "error", err)
+			serverErr <- err
 		}
 	}()
 
-	// Wait for interrupt signal to gracefully shut down the server
-	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
-	<-quit
-	slog.Info("Shutting down server...")
+	// Chờ tín hiệu dừng hoặc lỗi từ server
+	select {
+	case err := <-serverErr:
+		slog.Error("Server error", "error", err)
+		stop()
+	case <-ctx.Done():
+		slog.Info("Shutdown signal received")
+	}
 
-	// The context is used to inform the server it has 5 seconds to finish
-	// the request it is currently handling
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	slog.Info("Shutting down server gracefully...")
+
+	// Tạo timeout cho việc shutdown
+	shutdownCtx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
-	if err := server.Shutdown(ctx); err != nil {
+	// Dừng nhận request mới và đợi các request đang xử lý
+	if err := server.Shutdown(shutdownCtx); err != nil {
 		slog.Error("Server forced to shutdown:", "error", err)
 	}
 
-	slog.Info("Server exiting")
+	slog.Info("Server exited properly")
 }
