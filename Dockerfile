@@ -1,37 +1,41 @@
-# build
-FROM golang:1.22.6-alpine3.20 as builder
+# Build stage
+FROM golang:1.22-alpine AS builder
 
-RUN apk update && apk add git
+# Install build dependencies
+RUN apk add --no-cache git ca-certificates build-base
 
-ENV APP_HOME /go/app
-ARG ACCESS_TOKEN
-ENV ACCESS_TOKEN=$ACCESS_TOKEN
-ARG USERNAME
-ENV USERNAME=$USERNAME
+WORKDIR /app
 
-RUN git config --global url."https://${USERNAME}:${ACCESS_TOKEN}@gitlab.ai-vlab.com".insteadOf "https://gitlab.ai-vlab.com"
-
-WORKDIR "$APP_HOME"
-
-COPY go.* ./
+# Download dependencies
+COPY go.mod go.sum ./
 RUN go mod download
 
-COPY . ./
+# Copy source code
+COPY . .
 
-RUN go build -o server ./cmd
 
-# run
-FROM surnet/alpine-wkhtmltopdf:3.18.0-0.12.6-small
-RUN apk add --no-cache tzdata
+# Build the application
+RUN CGO_ENABLED=0 GOOS=linux go build -ldflags='-w -s -extldflags "-static"' -o /app/server ./cmd
 
-ENV APP_HOME /go/app
+# Final stage
+FROM alpine:3.20
 
-WORKDIR "$APP_HOME"
+# Install runtime dependencies
+RUN apk --no-cache add tzdata ca-certificates
 
-COPY config.yml config.yml
-COPY i18n i18n
-COPY assets assets
-COPY --from=builder "$APP_HOME"/server $APP_HOME
+WORKDIR /app
 
-# Run the web service on container startup.
-ENTRYPOINT ["./server"]
+# Copy binary and configs
+COPY --from=builder /app/server .
+COPY --from=builder /app/configs/ ./configs/
+COPY --from=builder /app/i18n/ ./i18n/
+COPY --from=builder /app/casbin/ ./casbin/
+
+# Set timezone
+ENV TZ=Asia/Ho_Chi_Minh
+
+# Expose port
+EXPOSE 8080
+
+# Run the application
+CMD ["./server"]
