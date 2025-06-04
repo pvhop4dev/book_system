@@ -1,14 +1,12 @@
 package middleware
 
 import (
-	"book_system/internal/config"
 	"book_system/internal/service"
 	"book_system/internal/utils"
 	"net/http"
 	"strings"
 
 	"github.com/casbin/casbin/v2"
-	xormadapter "github.com/casbin/xorm-adapter/v2"
 	"github.com/gin-gonic/gin"
 )
 
@@ -28,20 +26,21 @@ func Authorizator(authority ...string) gin.HandlerFunc {
 }
 
 var e *casbin.Enforcer
+var err error
 
 func init() {
-	adapter, err := xormadapter.NewAdapter("mysql", config.MustGet().Casbin.DSN)
+	// adapter, err := xormadapter.NewAdapter("mysql", config.MustGet().Casbin.DSN)
+	// if err != nil {
+	// 	panic(err)
+	// }
+	e, err = casbin.NewEnforcer("casbin/model.conf", "casbin/policy.csv")
 	if err != nil {
 		panic(err)
 	}
-	e, err = casbin.NewEnforcer("casbin/model.conf", adapter)
-	if err != nil {
-		panic(err)
-	}
-	err = e.LoadPolicy()
-	if err != nil {
-		panic(err)
-	}
+	// err = e.LoadPolicy()
+	// if err != nil {
+	// 	panic(err)
+	// }
 }
 
 func Authorize() gin.HandlerFunc {

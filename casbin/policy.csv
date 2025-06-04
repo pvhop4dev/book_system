@@ -1,0 +1,29 @@
+# Quy tắc cho admin
+p,admin,book,create
+p,admin,book,read
+p,admin,book,update
+p,admin,book,delete
+p,admin,user,create
+p,admin,user,read
+p,admin,user,update
+p,admin,user,delete
+
+# Quy tắc cho user
+p,user,book,read
+p,user,book,create
+p,user,book,update
+p,user,book,delete
+
+# Quy tắc cho guest (khách chưa đăng nhập)
+p,guest,book,read
+
+# Quy tắc cho các API cụ thể
+p,admin,/api/books,GET
+p,admin,/api/books,POST
+p,admin,/api/books,PUT
+p,admin,/api/books,DELETE
+p,user,/api/books,GET
+p,user,/api/books,POST
+p,user,/api/books,PUT
+p,user,/api/books,DELETE
+p,guest,/api/books,GET

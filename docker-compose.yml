@@ -2,27 +2,25 @@ services:
   app:
     build:
       context: .
-      target: builder
+      dockerfile: Dockerfile
     container_name: book_system
-    restart: unless-stopped
-    ports:
-      - "3033:3033"
+    restart: always
     environment:
       - TZ=Asia/Ho_Chi_Minh
       - GIN_MODE=release
-    depends_on:
-      mysql:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-      minio:
-        condition: service_healthy
-    networks:
-      - book_network
+    ports:
+      - "3033:3033"
     volumes:
+      - ./uploads:/app/uploads
       - ./configs:/app/configs:ro
       - ./i18n:/app/i18n:ro
       - uploads:/app/uploads
+    depends_on:
+      - mysql
+      - redis
+      - minio
+    networks:
+      - book_network
 
   mysql:
     image: mysql:8.0

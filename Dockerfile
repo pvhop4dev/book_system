@@ -2,20 +2,19 @@
 FROM golang:1.24.2-alpine AS builder
 
 # Install build dependencies
-RUN apk add --no-cache git ca-certificates build-base
+RUN apk add --no-cache git ca-certificates
 
 WORKDIR /app
 
-# Download dependencies
+# Copy dependency files first to leverage Docker cache
 COPY go.mod go.sum ./
 RUN go mod download
 
-# Copy source code
+# Copy the rest of the source code
 COPY . .
 
-
 # Build the application
-RUN CGO_ENABLED=0 GOOS=linux go build -ldflags='-w -s -extldflags "-static"' -o /app/server ./cmd
+RUN CGO_ENABLED=0 GOOS=linux go build -ldflags='-w -s' -o book-system ./cmd
 
 # Final stage
 FROM alpine:3.20
@@ -25,8 +24,8 @@ RUN apk --no-cache add tzdata ca-certificates
 
 WORKDIR /app
 
-# Copy binary and configs
-COPY --from=builder /app/server .
+# Copy binary and necessary files only
+COPY --from=builder /app/book-system .
 COPY --from=builder /app/configs/ ./configs/
 COPY --from=builder /app/i18n/ ./i18n/
 COPY --from=builder /app/casbin/ ./casbin/
@@ -34,8 +33,5 @@ COPY --from=builder /app/casbin/ ./casbin/
 # Set timezone
 ENV TZ=Asia/Ho_Chi_Minh
 
-# Expose port
-EXPOSE 3033
-
 # Run the application
-CMD ["./server"]
+CMD ["./book-system"]

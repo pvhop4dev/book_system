@@ -73,6 +73,10 @@ func configGin() {
 	}
 }
 
+func initRedis() {
+	infrastructure.InitRedis()
+}
+
 // @title Book System API
 // @version 1.0
 // @description This is a sample server for Book System.
@@ -95,6 +99,7 @@ func main() {
 	initI18n()
 	configGin()
 	initLogger()
+	initRedis()
 
 	db := initDB()
 
