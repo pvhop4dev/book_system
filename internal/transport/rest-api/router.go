@@ -11,16 +11,11 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/minio/minio-go/v7"
 	"gorm.io/gorm"
 )
 
 type Router struct {
 	db *gorm.DB
-
-	minioClient   *minio.Client
-	defaultBucket string
-	returnURL     string
 }
 
 func NewRouter(db *gorm.DB) *Router {
