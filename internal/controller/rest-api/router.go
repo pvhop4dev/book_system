@@ -33,6 +33,7 @@ func NewRouter(minioClient *minio.Client, defaultBucket, returnURL string, db *g
 
 func (r *Router) SetupRoutes(router *gin.Engine) {
 	// Health check
+	router.Use(middleware.GlobalRecover)
 	router.GET("/health", HealthCheckHandler)
 
 	// Swagger

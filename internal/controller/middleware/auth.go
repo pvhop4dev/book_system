@@ -28,7 +28,6 @@ func Authorizator(authority ...string) gin.HandlerFunc {
 }
 
 var e *casbin.Enforcer
-var err error
 
 func init() {
 	adapter, err := xormadapter.NewAdapter("mysql", config.MustGet().Casbin.DSN)

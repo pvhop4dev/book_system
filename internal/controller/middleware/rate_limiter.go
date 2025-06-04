@@ -53,7 +53,7 @@ func cleanLimiter() {
 	for {
 		time.Sleep(time.Second * 30)
 		for k, v := range mapRateLimiter {
-			if time.Now().Sub(v.lastRequest) > time.Minute*5 {
+			if time.Since(v.lastRequest) > time.Minute*5 {
 				delete(mapRateLimiter, k)
 			}
 		}

@@ -70,7 +70,7 @@ func Filter[T any](data []T, f func(T) bool) []T {
 
 func BuildTree[T any](slice []T, isParent func(m T) bool, compare func(p T, c T) bool, setTree func(p *T, c []T)) []T {
 	tree := Filter(slice, isParent)
-	for i, _ := range tree {
+	for i := range tree {
 		buildTree(&tree[i], slice, compare, setTree)
 	}
 	return tree
@@ -83,7 +83,7 @@ func buildTree[T any](parent *T, slice []T, compare func(p T, c T) bool, setTree
 	if len(children) == 0 {
 		return
 	}
-	for i, _ := range children {
+	for i := range children {
 		buildTree(&children[i], slice, compare, setTree)
 	}
 	setTree(parent, children)

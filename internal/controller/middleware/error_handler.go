@@ -96,3 +96,21 @@ var TooManyRequests = Error{
 	Message:  "too_many_requests",
 	I18nData: map[string]string{},
 }
+
+var Conflict = Error{
+	Code:     409,
+	Message:  "conflict",
+	I18nData: map[string]string{},
+}
+
+var Existed = Error{
+	Code:     409,
+	Message:  "existed",
+	I18nData: map[string]string{},
+}
+
+var NotExisted = Error{
+	Code:     409,
+	Message:  "not_existed",
+	I18nData: map[string]string{},
+}

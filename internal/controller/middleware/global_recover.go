@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func globalRecover(c *gin.Context) {
+func GlobalRecover(c *gin.Context) {
 	defer func(c *gin.Context) {
 		if rec := recover(); rec != nil {
 			// that recovery also handle XHR's
