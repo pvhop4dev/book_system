@@ -91,9 +91,9 @@ func (r *Router) SetupRoutes(router *gin.Engine) {
 	uploadService := upload_service.NewUploadService()
 
 	// Initialize transports
-	userTransport := NewUserTransport(userService)
-	bookTransport := NewBookTransport(bookService)
-	uploadTransport := NewUploadTransport(uploadService)
+	userController := NewUserController(userService)
+	bookController := NewBookController(bookService)
+	uploadController := NewUploadController(uploadService)
 
 	// Public routes
 	v1 := router.Group("/api/v1")
@@ -101,40 +101,40 @@ func (r *Router) SetupRoutes(router *gin.Engine) {
 		// Auth routes
 		authGroup := v1.Group("/auth")
 		{
-			authGroup.POST("/register", userTransport.Register)
-			authGroup.POST("/login", userTransport.Login)
-			authGroup.POST("/refresh", userTransport.RefreshToken)
+			authGroup.POST("/register", userController.Register)
+			authGroup.POST("/login", userController.Login)
+			authGroup.POST("/refresh", userController.RefreshToken)
 		}
 
 		// File upload routes
 		filesGroup := v1.Group("/files")
 		filesGroup.Use(middleware.AuthMiddleware(tokenSvc))
 		{
-			filesGroup.POST("/upload", uploadTransport.UploadFile)
-			filesGroup.POST("/upload/multiple", uploadTransport.UploadMultipleFiles)
-			filesGroup.GET("/:filename", uploadTransport.GetFile)
-			filesGroup.DELETE("/:filename", uploadTransport.DeleteFile)
-			filesGroup.GET("/:filename/url", uploadTransport.GetFileURL)
+			filesGroup.POST("/upload", uploadController.UploadFile)
+			filesGroup.POST("/upload/multiple", uploadController.UploadMultipleFiles)
+			filesGroup.GET("/:filename", uploadController.GetFile)
+			filesGroup.DELETE("/:filename", uploadController.DeleteFile)
+			filesGroup.GET("/:filename/url", uploadController.GetFileURL)
 		}
 
 		// User routes (protected)
 		usersGroup := v1.Group("/users")
 		usersGroup.Use(middleware.AuthMiddleware(tokenSvc))
 		{
-			usersGroup.GET("/me", userTransport.GetUserProfile)
-			usersGroup.PUT("/me", userTransport.UpdateUserProfile)
-			usersGroup.GET("", userTransport.ListUsers)
+			usersGroup.GET("/me", userController.GetUserProfile)
+			usersGroup.PUT("/me", userController.UpdateUserProfile)
+			usersGroup.GET("", userController.ListUsers)
 		}
 
 		// Book routes (protected)
 		booksGroup := v1.Group("/books")
 		booksGroup.Use(middleware.AuthMiddleware(tokenSvc))
 		{
-			booksGroup.POST("", bookTransport.CreateBook)
-			booksGroup.GET("", bookTransport.ListBooks)
-			booksGroup.GET("/:id", bookTransport.GetBookByID)
-			booksGroup.PUT("/:id", bookTransport.UpdateBook)
-			booksGroup.DELETE("/:id", bookTransport.DeleteBook)
+			booksGroup.POST("", bookController.CreateBook)
+			booksGroup.GET("", bookController.ListBooks)
+			booksGroup.GET("/:id", bookController.GetBookByID)
+			booksGroup.PUT("/:id", bookController.UpdateBook)
+			booksGroup.DELETE("/:id", bookController.DeleteBook)
 		}
 	}
 }

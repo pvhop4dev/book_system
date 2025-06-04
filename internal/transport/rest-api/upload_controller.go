@@ -4,11 +4,12 @@ import (
 	"book_system/internal/infrastructure"
 	"book_system/internal/model/dto"
 	"book_system/internal/service"
+	_ "book_system/internal/transport/response"
 	"fmt"
 	"io"
 	"net/http"
 	"time"
-	_ "book_system/internal/transport/response"
+
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog/log"
 )
@@ -21,12 +22,12 @@ type FileResponse struct {
 	URL      string `json:"url,omitempty"`
 }
 
-type uploadTransport struct {
+type uploadController struct {
 	uploadService service.IUploadService
 }
 
-func NewUploadTransport(uploadService service.IUploadService) *uploadTransport {
-	return &uploadTransport{
+func NewUploadController(uploadService service.IUploadService) *uploadController {
+	return &uploadController{
 		uploadService: uploadService,
 	}
 }
@@ -40,7 +41,7 @@ func NewUploadTransport(uploadService service.IUploadService) *uploadTransport {
 // @Param file formData file true "File to upload"
 // @Success 200 {object} FileResponse
 // @Router /api/v1/upload [post]
-func (u *uploadTransport) UploadFile(c *gin.Context) {
+func (u *uploadController) UploadFile(c *gin.Context) {
 	// Single file
 	file, err := c.FormFile("file")
 	if err != nil {
@@ -86,7 +87,7 @@ func (u *uploadTransport) UploadFile(c *gin.Context) {
 // @Param files formData []file true "Files to upload"
 // @Success 200 {object} response.Response{data=[]FileResponse}
 // @Router /api/v1/upload/multiple [post]
-func (u *uploadTransport) UploadMultipleFiles(c *gin.Context) {
+func (u *uploadController) UploadMultipleFiles(c *gin.Context) {
 	form, err := c.MultipartForm()
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -149,7 +150,7 @@ func (u *uploadTransport) UploadMultipleFiles(c *gin.Context) {
 // @Param filename path string true "File name"
 // @Success 200 {file} file
 // @Router /api/v1/files/{filename} [get]
-func (u *uploadTransport) GetFile(c *gin.Context) {
+func (u *uploadController) GetFile(c *gin.Context) {
 	filename := c.Param("filename")
 	if filename == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "filename is required"})
@@ -199,7 +200,7 @@ func (u *uploadTransport) GetFile(c *gin.Context) {
 // @Param filename path string true "File name"
 // @Success 200 {object} map[string]string
 // @Router /api/v1/files/{filename} [delete]
-func (u *uploadTransport) DeleteFile(c *gin.Context) {
+func (u *uploadController) DeleteFile(c *gin.Context) {
 	filename := c.Param("filename")
 	if filename == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "filename is required"})
@@ -226,7 +227,7 @@ func (u *uploadTransport) DeleteFile(c *gin.Context) {
 // @Param expiry query int false "Expiry time in hours (default: 24)"
 // @Success 200 {object} map[string]string
 // @Router /api/v1/files/{filename}/url [get]
-func (u *uploadTransport) GetFileURL(c *gin.Context) {
+func (u *uploadController) GetFileURL(c *gin.Context) {
 	filename := c.Param("filename")
 	if filename == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "filename is required"})
