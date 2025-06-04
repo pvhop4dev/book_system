@@ -100,41 +100,22 @@ func (r *Router) SetupRoutes(router *gin.Engine) {
 	{
 		// Auth routes
 		authGroup := v1.Group("/auth")
-		{
-			authGroup.POST("/register", userController.Register)
-			authGroup.POST("/login", userController.Login)
-			authGroup.POST("/refresh", userController.RefreshToken)
-		}
+		authGroup.Use(middleware.AuthMiddleware(tokenSvc))
+		userController.SetupAuthRoutes(authGroup)
 
 		// File upload routes
 		filesGroup := v1.Group("/files")
 		filesGroup.Use(middleware.AuthMiddleware(tokenSvc))
-		{
-			filesGroup.POST("/upload", uploadController.UploadFile)
-			filesGroup.POST("/upload/multiple", uploadController.UploadMultipleFiles)
-			filesGroup.GET("/:filename", uploadController.GetFile)
-			filesGroup.DELETE("/:filename", uploadController.DeleteFile)
-			filesGroup.GET("/:filename/url", uploadController.GetFileURL)
-		}
+		uploadController.SetupUploadRoutes(filesGroup)
 
 		// User routes (protected)
 		usersGroup := v1.Group("/users")
 		usersGroup.Use(middleware.AuthMiddleware(tokenSvc))
-		{
-			usersGroup.GET("/me", userController.GetUserProfile)
-			usersGroup.PUT("/me", userController.UpdateUserProfile)
-			usersGroup.GET("", userController.ListUsers)
-		}
+		userController.SetupUsersRoutes(usersGroup)
 
 		// Book routes (protected)
 		booksGroup := v1.Group("/books")
 		booksGroup.Use(middleware.AuthMiddleware(tokenSvc))
-		{
-			booksGroup.POST("", bookController.CreateBook)
-			booksGroup.GET("", bookController.ListBooks)
-			booksGroup.GET("/:id", bookController.GetBookByID)
-			booksGroup.PUT("/:id", bookController.UpdateBook)
-			booksGroup.DELETE("/:id", bookController.DeleteBook)
-		}
+		bookController.SetupBooksRoutes(booksGroup)
 	}
 }

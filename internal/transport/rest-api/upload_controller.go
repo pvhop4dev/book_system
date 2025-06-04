@@ -32,6 +32,14 @@ func NewUploadController(uploadService service.IUploadService) *uploadController
 	}
 }
 
+func (u *uploadController) SetupUploadRoutes(router *gin.RouterGroup) {
+	router.POST("/upload", u.UploadFile)
+	router.POST("/upload/multiple", u.UploadMultipleFiles)
+	router.GET("/:filename", u.GetFile)
+	router.DELETE("/:filename", u.DeleteFile)
+	router.GET("/:filename/url", u.GetFileURL)
+}
+
 // UploadFile handles single file upload
 // @Summary Upload a single file
 // @Description Upload a file to the storage

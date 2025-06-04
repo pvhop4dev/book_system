@@ -19,6 +19,18 @@ func NewUserController(userService service.IUserService) *UserController {
 	}
 }
 
+func (uc *UserController) SetupUsersRoutes(router *gin.RouterGroup) {
+	router.GET("/me", uc.GetUserProfile)
+	router.PUT("/me", uc.UpdateUserProfile)
+	router.GET("", uc.ListUsers)
+}
+
+func (uc *UserController) SetupAuthRoutes(router *gin.RouterGroup) {
+	router.POST("/register", uc.Register)
+	router.POST("/login", uc.Login)
+	router.POST("/refresh", uc.RefreshToken)
+}
+
 // RegisterUser godoc
 // @Summary Register a new user
 // @Description Register a new user with the input payload

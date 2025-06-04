@@ -23,6 +23,14 @@ func NewBookController(bookService service.IBookService) *BookController {
 	}
 }
 
+func (c *BookController) SetupBooksRoutes(router *gin.RouterGroup) {
+	router.POST("", c.CreateBook)
+	router.GET("", c.ListBooks)
+	router.GET(":id", c.GetBookByID)
+	router.PUT(":id", c.UpdateBook)
+	router.DELETE(":id", c.DeleteBook)
+}
+
 // CreateBook godoc
 // @Summary Create a new book
 // @Description Create a new book with the input payload
