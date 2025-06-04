@@ -6,11 +6,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// Response represents a standard API response
+// @name Response
+// @Description Standard API response format
 type Response struct {
-	Code    int         `json:"code"`
-	Message string      `json:"message"`
-	Data    interface{} `json:"data,omitempty"`
+    Code    int         `json:"code" swaggertype:"integer"`
+    Message string      `json:"message" swaggertype:"string"`
+    Data    interface{} `json:"data,omitempty" swaggertype:"object"`
 }
+
 
 func JSON(c *gin.Context, code int, message string, data interface{}) {
 	c.JSON(code, Response{

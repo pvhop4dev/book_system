@@ -11,14 +11,14 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// Booktransport handles book related HTTP requests
-type Booktransport struct {
+// BookTransport handles book related HTTP requests
+type BookTransport struct {
 	bookService service.IBookService
 }
 
-// NewBooktransport creates a new book transport
-func NewBooktransport(bookService service.IBookService) *Booktransport {
-	return &Booktransport{
+// NewBookTransport creates a new book transport
+func NewBookTransport(bookService service.IBookService) *BookTransport {
+	return &BookTransport{
 		bookService: bookService,
 	}
 }
@@ -30,12 +30,12 @@ func NewBooktransport(bookService service.IBookService) *Booktransport {
 // @Accept  json
 // @Produce  json
 // @Param input body dto.CreateBookRequest true "Book data"
-// @Success 201 {object} response.APIResponse{data=dto.BookResponse} "Successfully created book"
-// @Failure 400 {object} response.APIResponse "Invalid input"
-// @Failure 409 {object} response.APIResponse "Book with this ISBN already exists"
-// @Failure 500 {object} response.APIResponse "Internal server error"
+// @Success 201 {object} response.Response{data=dto.BookResponse} "Successfully created book"
+// @Failure 400 {object} response.Response "Invalid input"
+// @Failure 409 {object} response.Response "Book with this ISBN already exists"
+// @Failure 500 {object} response.Response "Internal server error"
 // @Router /api/v1/books [post]
-func (c *Booktransport) CreateBook(ctx *gin.Context) {
+func (c *BookTransport) CreateBook(ctx *gin.Context) {
 	var req dto.CreateBookRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		response.BadRequest(ctx, "Invalid request body")
@@ -69,12 +69,12 @@ func (c *Booktransport) CreateBook(ctx *gin.Context) {
 // @Accept  json
 // @Produce  json
 // @Param id path string true "Book ID"
-// @Success 200 {object} response.APIResponse{data=dto.BookResponse} "Successfully retrieved book"
-// @Failure 400 {object} response.APIResponse "Invalid book ID"
-// @Failure 404 {object} response.APIResponse "Book not found"
-// @Failure 500 {object} response.APIResponse "Internal server error"
+// @Success 200 {object} response.Response{data=dto.BookResponse} "Successfully retrieved book"
+// @Failure 400 {object} response.Response "Invalid book ID"
+// @Failure 404 {object} response.Response "Book not found"
+// @Failure 500 {object} response.Response "Internal server error"
 // @Router /api/v1/books/{id} [get]
-func (c *Booktransport) GetBookByID(ctx *gin.Context) {
+func (c *BookTransport) GetBookByID(ctx *gin.Context) {
 	id := ctx.Param("id")
 	if id == "" {
 		response.BadRequest(ctx, "Book ID is required")
@@ -104,11 +104,11 @@ func (c *Booktransport) GetBookByID(ctx *gin.Context) {
 // @Param page query int false "Page number (default: 1)"
 // @Param page_size query int false "Number of items per page (default: 10, max: 100)"
 // @Param author query string false "Filter by author"
-// @Success 200 {object} response.APIResponse{data=dto.BookListResponse} "Successfully retrieved books"
-// @Failure 400 {object} response.APIResponse "Invalid query parameters"
-// @Failure 500 {object} response.APIResponse "Internal server error"
+// @Success 200 {object} response.Response{data=dto.BookListResponse} "Successfully retrieved books"
+// @Failure 400 {object} response.Response "Invalid query parameters"
+// @Failure 500 {object} response.Response "Internal server error"
 // @Router /api/v1/books [get]
-func (c *Booktransport) ListBooks(ctx *gin.Context) {
+func (c *BookTransport) ListBooks(ctx *gin.Context) {
 	// Parse pagination parameters
 	page, _ := strconv.Atoi(ctx.DefaultQuery("page", "1"))
 	pageSize, _ := strconv.Atoi(ctx.DefaultQuery("page_size", "10"))
@@ -138,13 +138,13 @@ func (c *Booktransport) ListBooks(ctx *gin.Context) {
 // @Produce  json
 // @Param id path string true "Book ID"
 // @Param book body dto.UpdateBookRequest true "Update book"
-// @Success 200 {object} response.APIResponse{data=dto.BookResponse} "Successfully updated book"
-// @Failure 400 {object} response.APIResponse "Invalid input"
-// @Failure 404 {object} response.APIResponse "Book not found"
-// @Failure 409 {object} response.APIResponse "Book with this ISBN already exists"
-// @Failure 500 {object} response.APIResponse "Internal server error"
+// @Success 200 {object} response.Response{data=dto.BookResponse} "Successfully updated book"
+// @Failure 400 {object} response.Response "Invalid input"
+// @Failure 404 {object} response.Response "Book not found"
+// @Failure 409 {object} response.Response "Book with this ISBN already exists"
+// @Failure 500 {object} response.Response "Internal server error"
 // @Router /api/v1/books/{id} [put]
-func (c *Booktransport) UpdateBook(ctx *gin.Context) {
+func (c *BookTransport) UpdateBook(ctx *gin.Context) {
 	id := ctx.Param("id")
 	if id == "" {
 		response.BadRequest(ctx, "Book ID is required")
@@ -187,12 +187,12 @@ func (c *Booktransport) UpdateBook(ctx *gin.Context) {
 // @Accept  json
 // @Produce  json
 // @Param id path string true "Book ID"
-// @Success 200 {object} response.APIResponse "Successfully deleted book"
-// @Failure 400 {object} response.APIResponse "Invalid book ID"
-// @Failure 404 {object} response.APIResponse "Book not found"
-// @Failure 500 {object} response.APIResponse "Internal server error"
+// @Success 200 {object} response.Response "Successfully deleted book"
+// @Failure 400 {object} response.Response "Invalid book ID"
+// @Failure 404 {object} response.Response "Book not found"
+// @Failure 500 {object} response.Response "Internal server error"
 // @Router /api/v1/books/{id} [delete]
-func (c *Booktransport) DeleteBook(ctx *gin.Context) {
+func (c *BookTransport) DeleteBook(ctx *gin.Context) {
 	id := ctx.Param("id")
 	if id == "" {
 		response.BadRequest(ctx, "Book ID is required")
