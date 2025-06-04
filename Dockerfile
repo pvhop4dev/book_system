@@ -1,5 +1,5 @@
 # Build stage
-FROM golang:1.22-alpine AS builder
+FROM golang:1.24.2-alpine AS builder
 
 # Install build dependencies
 RUN apk add --no-cache git ca-certificates build-base
@@ -35,7 +35,7 @@ COPY --from=builder /app/casbin/ ./casbin/
 ENV TZ=Asia/Ho_Chi_Minh
 
 # Expose port
-EXPOSE 8080
+EXPOSE 3033
 
 # Run the application
 CMD ["./server"]

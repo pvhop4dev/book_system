@@ -1,32 +1,45 @@
 environment: development
-port: 8080
+port: 3033
 
 grpc:
   port: 50051
 
+jwt:
+  access-secret: your-access-secret-key
+  refresh-secret: your-refresh-secret-key
+  access-expiry: 3600  # 1 hour in seconds
+  refresh-expiry: 2592000  # 30 days in seconds
+
 rate_limiter:
   burst: 10
   rate: 1
+
+codec:
+  secret-key: 1234567890  # Change this to a secure key
+
+casbin:
+  dsn: ./casbin/rbac_model.conf
+
 database:
   mysql:
     host: localhost
-    port: 3306
-    user: root
-    password: root
+    port: 3307  # Updated to match docker-compose
+    user: user  # Changed to match docker-compose
+    password: password  # Changed to match docker-compose
     database: book_system
 
 redis:
   host: localhost
-  port: 6379
-  user: root
-  password: root
-  database: book_system
+  port: 6380  # Updated to match docker-compose
+  user: ""  # Redis doesn't use username by default
+  password: ""  # No password set in docker-compose
+  database: "0"  # Default Redis database
 
 minio:
   host: localhost
-  port: 9000
-  access-key: root
-  secret-key: root
+  port: 9002  # Updated to match docker-compose
+  access-key: minioadmin  # Matches docker-compose
+  secret-key: minioadmin  # Matches docker-compose
   location: us-east-1
   default-bucket: book-system
   secure: false
