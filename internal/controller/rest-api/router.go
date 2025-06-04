@@ -2,8 +2,9 @@ package restapi
 
 import (
 	"book_system/internal/config"
-	middleware "book_system/internal/controller/rest-api/middleware"
+	"book_system/internal/controller/rest-api/middleware"
 	"book_system/internal/repository"
+	book_service "book_system/internal/service/book_service"
 	token_service "book_system/internal/service/token_service"
 	upload_service "book_system/internal/service/upload_service"
 	user_service "book_system/internal/service/user_service"
@@ -39,6 +40,7 @@ func (r *Router) SetupRoutes(router *gin.Engine) {
 
 	// Initialize repositories
 	userRepo := repository.NewUserRepository(r.db)
+	bookRepo := repository.NewBookRepository(r.db)
 
 	// Initialize services
 	tokenSvc := token_service.NewTokenService(
@@ -49,10 +51,12 @@ func (r *Router) SetupRoutes(router *gin.Engine) {
 	)
 
 	userService := user_service.NewUserService(userRepo, tokenSvc)
+	bookService := book_service.NewBookService(bookRepo)
 	uploadService := upload_service.NewUploadService(r.minioClient, r.defaultBucket, r.returnURL)
 
 	// Initialize controllers
 	userController := NewUserController(userService)
+	bookController := NewBookController(bookService)
 	uploadController := NewUploadController(uploadService)
 
 	// Public routes
@@ -84,6 +88,17 @@ func (r *Router) SetupRoutes(router *gin.Engine) {
 			usersGroup.GET("/me", userController.GetUserProfile)
 			usersGroup.PUT("/me", userController.UpdateUserProfile)
 			usersGroup.GET("", userController.ListUsers)
+		}
+
+		// Book routes (protected)
+		booksGroup := v1.Group("/books")
+		booksGroup.Use(middleware.AuthMiddleware(tokenSvc))
+		{
+			booksGroup.POST("", bookController.CreateBook)
+			booksGroup.GET("", bookController.ListBooks)
+			booksGroup.GET("/:id", bookController.GetBookByID)
+			booksGroup.PUT("/:id", bookController.UpdateBook)
+			booksGroup.DELETE("/:id", bookController.DeleteBook)
 		}
 	}
 }

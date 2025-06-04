@@ -38,3 +38,17 @@ type ITokenService interface {
 	// RefreshToken generates a new token pair using a refresh token
 	RefreshToken(refreshToken string) (*entity.TokenPair, error)
 }
+
+// IBookService defines the interface for book operations
+type IBookService interface {
+	// CreateBook creates a new book
+	CreateBook(ctx context.Context, req *dto.CreateBookRequest) (*dto.BookResponse, error)
+	// GetBookByID gets a book by ID
+	GetBookByID(ctx context.Context, id string) (*dto.BookResponse, error)
+	// ListBooks gets a paginated list of books
+	ListBooks(ctx context.Context, page, pageSize int, filters map[string]interface{}) (*dto.BookListResponse, error)
+	// UpdateBook updates a book
+	UpdateBook(ctx context.Context, id string, req *dto.UpdateBookRequest) (*dto.BookResponse, error)
+	// DeleteBook deletes a book
+	DeleteBook(ctx context.Context, id string) error
+}
