@@ -2,6 +2,7 @@ package restapi
 
 import (
 	"book_system/internal/config"
+	middleware "book_system/internal/controller/rest-api/middleware"
 	"book_system/internal/repository"
 	token_service "book_system/internal/service/token_service"
 	upload_service "book_system/internal/service/upload_service"
@@ -67,7 +68,7 @@ func (r *Router) SetupRoutes(router *gin.Engine) {
 
 		// File upload routes
 		filesGroup := v1.Group("/files")
-		filesGroup.Use(AuthMiddleware(tokenSvc))
+		filesGroup.Use(middleware.AuthMiddleware(tokenSvc))
 		{
 			filesGroup.POST("/upload", uploadController.UploadFile)
 			filesGroup.POST("/upload/multiple", uploadController.UploadMultipleFiles)
@@ -78,7 +79,7 @@ func (r *Router) SetupRoutes(router *gin.Engine) {
 
 		// User routes (protected)
 		usersGroup := v1.Group("/users")
-		usersGroup.Use(AuthMiddleware(tokenSvc))
+		usersGroup.Use(middleware.AuthMiddleware(tokenSvc))
 		{
 			usersGroup.GET("/me", userController.GetUserProfile)
 			usersGroup.PUT("/me", userController.UpdateUserProfile)
