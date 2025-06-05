@@ -48,6 +48,7 @@
 
 ## Testing:
 - [ ] Thêm unit test và integration test
+- [ ] coverage.html
 - [ ] Sử dụng mock cho các dependency
 
 ## Cấu hình:
@@ -59,6 +60,7 @@
 - [ ] Thêm trace-ID for restapi, grpc
 - [ ] Thêm metrics và monitoring
 - [ ] Tích hợp với các công cụ theo dõi hiệu năng
+- [ ] Thêm pprof
 
 ## Bảo mật:
 - [ ] Thêm external, internal ID

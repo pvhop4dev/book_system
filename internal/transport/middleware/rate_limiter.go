@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"book_system/internal/baselib/concurrentmap"
 	"book_system/internal/config"
 	"book_system/internal/utils"
 	"net/http"
@@ -12,13 +13,13 @@ import (
 
 func RateLimiter() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		rl, ok := mapRateLimiter[c.ClientIP()]
+		rl, ok := mapRateLimiter.Get(c.ClientIP())
 		if !ok {
 			cfg := config.MustGet()
 			rl = &rateLimiter{
 				limiter: rate.NewLimiter(rate.Limit(cfg.RateLimiter.Rate), cfg.RateLimiter.Burst),
 			}
-			mapRateLimiter[c.ClientIP()] = rl
+			mapRateLimiter.Set(c.ClientIP(), rl)
 		}
 		rl.lastRequest = time.Now()
 
@@ -35,7 +36,7 @@ func RateLimiter() gin.HandlerFunc {
 	}
 }
 
-var mapRateLimiter map[string]*rateLimiter
+var mapRateLimiter concurrentmap.ConcurrentMap[string, *rateLimiter]
 
 type rateLimiter struct {
 	limiter     *rate.Limiter
@@ -43,7 +44,7 @@ type rateLimiter struct {
 }
 
 func init() {
-	mapRateLimiter = make(map[string]*rateLimiter, 0)
+	mapRateLimiter = concurrentmap.New[*rateLimiter]()
 	go func() {
 		cleanLimiter()
 	}()
@@ -52,9 +53,9 @@ func init() {
 func cleanLimiter() {
 	for {
 		time.Sleep(time.Second * 30)
-		for k, v := range mapRateLimiter {
+		for k, v := range mapRateLimiter.Items() {
 			if time.Since(v.lastRequest) > time.Minute*5 {
-				delete(mapRateLimiter, k)
+				mapRateLimiter.Remove(k)
 			}
 		}
 	}
