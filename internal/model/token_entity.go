@@ -1,4 +1,4 @@
-package entity
+package model
 
 type TokenPair struct {
 	AccessToken  string `json:"access_token"`

@@ -1,7 +1,7 @@
 package restapi
 
 import (
-	"book_system/internal/model/dto"
+	"book_system/internal/model"
 	"book_system/internal/service"
 	"book_system/internal/transport/response"
 	"log/slog"
@@ -37,14 +37,14 @@ func (c *BookController) SetupBooksRoutes(router *gin.RouterGroup) {
 // @Tags books
 // @Accept  json
 // @Produce  json
-// @Param input body dto.CreateBookRequest true "Book data"
-// @Success 201 {object} response.Response{data=dto.BookResponse} "Successfully created book"
+// @Param input body model.CreateBookRequest true "Book data"
+// @Success 201 {object} response.Response{data=model.BookResponse} "Successfully created book"
 // @Failure 400 {object} response.Response "Invalid input"
 // @Failure 409 {object} response.Response "Book with this ISBN already exists"
 // @Failure 500 {object} response.Response "Internal server error"
 // @Router /api/v1/books [post]
 func (c *BookController) CreateBook(ctx *gin.Context) {
-	var req dto.CreateBookRequest
+	var req model.CreateBookRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		response.BadRequest(ctx, "Invalid request body")
 		return
@@ -77,7 +77,7 @@ func (c *BookController) CreateBook(ctx *gin.Context) {
 // @Accept  json
 // @Produce  json
 // @Param id path string true "Book ID"
-// @Success 200 {object} response.Response{data=dto.BookResponse} "Successfully retrieved book"
+// @Success 200 {object} response.Response{data=model.BookResponse} "Successfully retrieved book"
 // @Failure 400 {object} response.Response "Invalid book ID"
 // @Failure 404 {object} response.Response "Book not found"
 // @Failure 500 {object} response.Response "Internal server error"
@@ -112,7 +112,7 @@ func (c *BookController) GetBookByID(ctx *gin.Context) {
 // @Param page query int false "Page number (default: 1)"
 // @Param page_size query int false "Number of items per page (default: 10, max: 100)"
 // @Param author query string false "Filter by author"
-// @Success 200 {object} response.Response{data=dto.BookListResponse} "Successfully retrieved books"
+// @Success 200 {object} response.Response{data=model.BookListResponse} "Successfully retrieved books"
 // @Failure 400 {object} response.Response "Invalid query parameters"
 // @Failure 500 {object} response.Response "Internal server error"
 // @Router /api/v1/books [get]
@@ -145,8 +145,8 @@ func (c *BookController) ListBooks(ctx *gin.Context) {
 // @Accept  json
 // @Produce  json
 // @Param id path string true "Book ID"
-// @Param book body dto.UpdateBookRequest true "Update book"
-// @Success 200 {object} response.Response{data=dto.BookResponse} "Successfully updated book"
+// @Param book body model.UpdateBookRequest true "Update book"
+// @Success 200 {object} response.Response{data=model.BookResponse} "Successfully updated book"
 // @Failure 400 {object} response.Response "Invalid input"
 // @Failure 404 {object} response.Response "Book not found"
 // @Failure 409 {object} response.Response "Book with this ISBN already exists"
@@ -159,7 +159,7 @@ func (c *BookController) UpdateBook(ctx *gin.Context) {
 		return
 	}
 
-	var req dto.UpdateBookRequest
+	var req model.UpdateBookRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		response.BadRequest(ctx, "Invalid request body")
 		return

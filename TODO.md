@@ -44,6 +44,7 @@
 ## Tài liệu:
 - [x] Thêm API documentation với Swagger
 - [x] Viết README hướng dẫn cấu hình và chạy
+- [ ] Thêm Param, Security vào swagger
 
 ## Testing:
 - [ ] Thêm unit test và integration test

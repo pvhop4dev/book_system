@@ -40,13 +40,6 @@ func initDB() *gorm.DB {
 		os.Exit(1)
 	}
 	sqlDB, _ := db.DB()
-	defer func() {
-		if err := sqlDB.Close(); err != nil {
-			slog.Error("Failed to close database connection", "error", err)
-			return
-		}
-		slog.Info("Database connection closed")
-	}()
 
 	// Kiểm tra kết nối
 	if err := sqlDB.Ping(); err != nil {
@@ -101,7 +94,14 @@ func main() {
 	initMinio()
 	configGin()
 	db := initDB()
-
+	defer func() {
+		slog.Info("Closing database connection")
+		infrastructure.CloseDB()
+		slog.Info("Closing Redis connection")
+		infrastructure.CloseRedis()
+		slog.Info("Closing MinIO connection")
+		infrastructure.CloseMinio()
+	}()
 	// Tạo router và cấu hình routes
 	router := gin.New()
 	apiRouter := restapi.NewRouter(db)

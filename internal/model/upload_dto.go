@@ -1,4 +1,4 @@
-package dto
+package model
 
 type FileResponse struct {
 	FileName string `json:"file_name"`

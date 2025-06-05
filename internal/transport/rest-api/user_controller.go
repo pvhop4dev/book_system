@@ -1,7 +1,7 @@
 package restapi
 
 import (
-	"book_system/internal/model/dto"
+	"book_system/internal/model"
 	"book_system/internal/service"
 	"net/http"
 	"strconv"
@@ -37,13 +37,13 @@ func (uc *UserController) SetupAuthRoutes(router *gin.RouterGroup) {
 // @Tags users
 // @Accept  json
 // @Produce  json
-// @Param input body dto.RegisterRequest true "Register info"
-// @Success 201 {object} dto.RegisterResponse
+// @Param input body model.RegisterRequest true "Register info"
+// @Success 201 {object} model.RegisterResponse
 // @Failure 400 {object} map[string]interface{}
 // @Failure 500 {object} map[string]interface{}
 // @Router /api/v1/auth/register [post]
 func (uc *UserController) Register(c *gin.Context) {
-	var req dto.RegisterRequest
+	var req model.RegisterRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
 		return
@@ -64,13 +64,13 @@ func (uc *UserController) Register(c *gin.Context) {
 // @Tags auth
 // @Accept  json
 // @Produce  json
-// @Param input body dto.LoginRequest true "Login credentials"
-// @Success 200 {object} dto.LoginResponse
+// @Param input body model.LoginRequest true "Login credentials"
+// @Success 200 {object} model.LoginResponse
 // @Failure 400 {object} map[string]interface{}
 // @Failure 401 {object} map[string]interface{}
 // @Router /api/v1/auth/login [post]
 func (uc *UserController) Login(c *gin.Context) {
-	var req dto.LoginRequest
+	var req model.LoginRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
 		return
@@ -91,7 +91,7 @@ func (uc *UserController) Login(c *gin.Context) {
 // @Tags users
 // @Security BearerAuth
 // @Produce  json
-// @Success 200 {object} dto.User
+// @Success 200 {object} model.User
 // @Failure 401 {object} map[string]interface{}
 // @Failure 404 {object} map[string]interface{}
 // @Router /api/v1/users/me [get]
@@ -118,8 +118,8 @@ func (uc *UserController) GetUserProfile(c *gin.Context) {
 // @Security BearerAuth
 // @Accept  json
 // @Produce  json
-// @Param input body dto.UpdateUserRequest true "User update info"
-// @Success 200 {object} dto.User
+// @Param input body model.UpdateUserRequest true "User update info"
+// @Success 200 {object} model.User
 // @Failure 400 {object} map[string]interface{}
 // @Failure 401 {object} map[string]interface{}
 // @Router /api/v1/users/me [put]
@@ -130,7 +130,7 @@ func (uc *UserController) UpdateUserProfile(c *gin.Context) {
 		return
 	}
 
-	var req dto.UpdateUserRequest
+	var req model.UpdateUserRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
 		return
@@ -183,13 +183,13 @@ func (uc *UserController) ListUsers(c *gin.Context) {
 // @Tags auth
 // @Accept  json
 // @Produce  json
-// @Param input body dto.RefreshTokenRequest true "Refresh token"
-// @Success 200 {object} dto.LoginResponse
+// @Param input body model.RefreshTokenRequest true "Refresh token"
+// @Success 200 {object} model.LoginResponse
 // @Failure 400 {object} map[string]interface{}
 // @Failure 401 {object} map[string]interface{}
 // @Router /api/v1/auth/refresh [post]
 func (uc *UserController) RefreshToken(c *gin.Context) {
-	var req dto.RefreshTokenRequest
+	var req model.RefreshTokenRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
 		return

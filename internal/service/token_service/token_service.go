@@ -1,7 +1,7 @@
 package token_service
 
 import (
-	"book_system/internal/model/entity"
+	"book_system/internal/model"
 	"book_system/internal/service"
 	"time"
 )
@@ -42,32 +42,32 @@ func NewTokenService(
 }
 
 // GenerateToken generates a new access and refresh token pair
-func (s *jwtTokenService) GenerateToken(userID, role string) (*entity.TokenPair, error) {
+func (s *jwtTokenService) GenerateToken(userID, role string) (*model.TokenPair, error) {
 	// This is a placeholder implementation
 	// In a real application, you would use a JWT library like github.com/golang-jwt/jwt
 	// to generate and sign tokens
-	return &entity.TokenPair{
+	return &model.TokenPair{
 		AccessToken:  "access_token_placeholder",
 		RefreshToken: "refresh_token_placeholder",
 	}, nil
 }
 
 // ValidateToken validates a token and returns its claims
-func (s *jwtTokenService) ValidateToken(tokenString string) (*entity.TokenClaims, error) {
+func (s *jwtTokenService) ValidateToken(tokenString string) (*model.TokenClaims, error) {
 	// This is a placeholder implementation
 	// In a real application, you would validate the token and return the claims
-	return &entity.TokenClaims{
+	return &model.TokenClaims{
 		UserID: "user_id_placeholder",
 		Role:   "user",
 	}, nil
 }
 
 // RefreshToken generates a new token pair using a refresh token
-func (s *jwtTokenService) RefreshToken(refreshToken string) (*entity.TokenPair, error) {
+func (s *jwtTokenService) RefreshToken(refreshToken string) (*model.TokenPair, error) {
 	// This is a placeholder implementation
 	// In a real application, you would validate the refresh token
 	// and generate a new access token
-	return &entity.TokenPair{
+	return &model.TokenPair{
 		AccessToken:  "new_access_token_placeholder",
 		RefreshToken: "new_refresh_token_placeholder",
 	}, nil

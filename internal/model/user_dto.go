@@ -1,4 +1,4 @@
-package dto
+package model
 
 import (
 	"book_system/internal/infrastructure"
@@ -7,7 +7,7 @@ import (
 	"github.com/google/uuid"
 )
 
-type User struct {
+type UserResponse struct {
 	ID        uuid.UUID `json:"id"`
 	Username  string    `json:"username" validate:"required,min=3,max=50"`
 	Email     string    `json:"email" validate:"required,email"`
@@ -55,9 +55,9 @@ func (r *LoginRequest) Validate() error {
 }
 
 type LoginResponse struct {
-	Token        string `json:"token"`
-	RefreshToken string `json:"refresh_token"`
-	User         *User  `json:"user"`
+	Token        string        `json:"token"`
+	RefreshToken string        `json:"refresh_token"`
+	User         *UserResponse `json:"user"`
 }
 
 type RegisterRequest struct {

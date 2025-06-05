@@ -2,7 +2,7 @@ package restapi
 
 import (
 	"book_system/internal/infrastructure"
-	"book_system/internal/model/dto"
+	"book_system/internal/model"
 	"book_system/internal/service"
 	_ "book_system/internal/transport/response"
 	"fmt"
@@ -79,7 +79,7 @@ func (u *uploadController) UploadFile(c *gin.Context) {
 		// Continue even if URL generation fails, return the file path
 	}
 
-	c.JSON(http.StatusOK, dto.FileResponse{
+	c.JSON(http.StatusOK, model.FileResponse{
 		FileName: filePath,
 		URL:      fileURL,
 		Size:     file.Size,
@@ -108,14 +108,14 @@ func (u *uploadController) UploadMultipleFiles(c *gin.Context) {
 		return
 	}
 
-	var responses []dto.FileResponse
+	var responses []model.FileResponse
 	ctx := c.Request.Context()
 
 	for _, file := range files {
 		// Validate file size (e.g., 10MB limit per file)
 		const maxUploadSize = 10 << 20 // 10 MB
 		if file.Size > maxUploadSize {
-			responses = append(responses, dto.FileResponse{
+			responses = append(responses, model.FileResponse{
 				FileName: file.Filename,
 				URL:      "",
 			})
@@ -126,7 +126,7 @@ func (u *uploadController) UploadMultipleFiles(c *gin.Context) {
 		filePath, err := u.uploadService.UploadFile(ctx, file, "uploads")
 		if err != nil {
 			log.Error().Err(err).Str("file", file.Filename).Msg("Failed to upload file")
-			responses = append(responses, dto.FileResponse{
+			responses = append(responses, model.FileResponse{
 				FileName: file.Filename,
 				URL:      "",
 			})
@@ -140,7 +140,7 @@ func (u *uploadController) UploadMultipleFiles(c *gin.Context) {
 			// Continue even if URL generation fails, return the file path
 		}
 
-		responses = append(responses, dto.FileResponse{
+		responses = append(responses, model.FileResponse{
 			FileName: filePath,
 			URL:      fileURL,
 			Size:     file.Size,

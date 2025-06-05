@@ -1,8 +1,7 @@
 package user_service
 
 import (
-	"book_system/internal/model/dto"
-	"book_system/internal/model/entity"
+	"book_system/internal/model"
 	repo "book_system/internal/repository"
 	"book_system/internal/service"
 	"context"
@@ -29,7 +28,7 @@ func NewUserService(
 	}
 }
 
-func (s *userService) CreateUser(ctx context.Context, req *dto.CreateUserRequest) (*dto.User, error) {
+func (s *userService) CreateUser(ctx context.Context, req *model.CreateUserRequest) (*model.User, error) {
 	// Check if user with email already exists
 	exists, err := s.userRepo.ExistsByEmail(ctx, req.Email)
 	if err != nil {
@@ -47,7 +46,7 @@ func (s *userService) CreateUser(ctx context.Context, req *dto.CreateUserRequest
 
 	// Create user entity
 	now := time.Now()
-	user := &entity.User{
+	user := &model.User{
 		ID:        uuid.New(),
 		Username:  req.Username,
 		Email:     req.Email,
@@ -65,10 +64,10 @@ func (s *userService) CreateUser(ctx context.Context, req *dto.CreateUserRequest
 	}
 
 	// Convert to DTO and return
-	return user.ToDTO(), nil
+	return user, nil
 }
 
-func (s *userService) GetUserByID(ctx context.Context, id string) (*dto.User, error) {
+func (s *userService) GetUserByID(ctx context.Context, id string) (*model.User, error) {
 	userID, err := uuid.Parse(id)
 	if err != nil {
 		return nil, errors.New("invalid user ID format")
@@ -79,34 +78,34 @@ func (s *userService) GetUserByID(ctx context.Context, id string) (*dto.User, er
 		return nil, err
 	}
 
-	return user.ToDTO(), nil
+	return user, nil
 }
 
-func (s *userService) GetUserByEmail(ctx context.Context, email string) (*dto.User, error) {
+func (s *userService) GetUserByEmail(ctx context.Context, email string) (*model.User, error) {
 	user, err := s.userRepo.FindByEmail(ctx, email)
 	if err != nil {
 		return nil, err
 	}
 
-	return user.ToDTO(), nil
+	return user, nil
 }
 
-func (s *userService) ListUsers(ctx context.Context, page, pageSize int) ([]*dto.User, int64, error) {
+func (s *userService) ListUsers(ctx context.Context, page, pageSize int) ([]*model.User, int64, error) {
 	users, total, err := s.userRepo.FindAll(ctx, page, pageSize)
 	if err != nil {
 		return nil, 0, err
 	}
 
 	// Convert users to DTOs
-	userDTOs := make([]*dto.User, len(users))
+	userDTOs := make([]*model.User, len(users))
 	for i, user := range users {
-		userDTOs[i] = user.ToDTO()
+		userDTOs[i] = user
 	}
 
 	return userDTOs, total, nil
 }
 
-func (s *userService) UpdateUser(ctx context.Context, id string, req *dto.UpdateUserRequest) (*dto.User, error) {
+func (s *userService) UpdateUser(ctx context.Context, id string, req *model.UpdateUserRequest) (*model.User, error) {
 	userID, err := uuid.Parse(id)
 	if err != nil {
 		return nil, errors.New("invalid user ID format")
@@ -141,7 +140,7 @@ func (s *userService) UpdateUser(ctx context.Context, id string, req *dto.Update
 		return nil, err
 	}
 
-	return user.ToDTO(), nil
+	return user, nil
 }
 
 func (s *userService) DeleteUser(ctx context.Context, id string) error {
@@ -153,7 +152,7 @@ func (s *userService) DeleteUser(ctx context.Context, id string) error {
 	return s.userRepo.Delete(ctx, userID)
 }
 
-func (s *userService) Login(ctx context.Context, req *dto.LoginRequest) (*dto.LoginResponse, error) {
+func (s *userService) Login(ctx context.Context, req *model.LoginRequest) (*model.LoginResponse, error) {
 	// Find user by email
 	user, err := s.userRepo.FindByEmail(ctx, req.Email)
 	if err != nil {
@@ -178,16 +177,16 @@ func (s *userService) Login(ctx context.Context, req *dto.LoginRequest) (*dto.Lo
 		// You might want to add proper logging here
 	}
 
-	return &dto.LoginResponse{
+	return &model.LoginResponse{
 		Token:        tokenPair.AccessToken,
 		RefreshToken: tokenPair.RefreshToken,
 		User:         user.ToDTO(),
 	}, nil
 }
 
-func (s *userService) Register(ctx context.Context, req *dto.RegisterRequest) (*dto.RegisterResponse, error) {
+func (s *userService) Register(ctx context.Context, req *model.RegisterRequest) (*model.RegisterResponse, error) {
 	// Create user
-	createReq := &dto.CreateUserRequest{
+	createReq := &model.CreateUserRequest{
 		Username: req.Username,
 		Email:    req.Email,
 		Password: req.Password,
@@ -201,7 +200,7 @@ func (s *userService) Register(ctx context.Context, req *dto.RegisterRequest) (*
 	}
 
 	// Generate token for immediate login
-	loginReq := &dto.LoginRequest{
+	loginReq := &model.LoginRequest{
 		Email:    req.Email,
 		Password: req.Password,
 	}
@@ -212,13 +211,13 @@ func (s *userService) Register(ctx context.Context, req *dto.RegisterRequest) (*
 		return nil, err
 	}
 
-	return &dto.RegisterResponse{
+	return &model.RegisterResponse{
 		User:  user,
 		Token: loginRes.Token,
 	}, nil
 }
 
-func (s *userService) RefreshToken(ctx context.Context, token string) (*dto.LoginResponse, error) {
+func (s *userService) RefreshToken(ctx context.Context, token string) (*model.LoginResponse, error) {
 	// Validate refresh token
 	claims, err := s.tokenService.ValidateToken(token)
 	if err != nil {
@@ -237,7 +236,7 @@ func (s *userService) RefreshToken(ctx context.Context, token string) (*dto.Logi
 		return nil, err
 	}
 
-	return &dto.LoginResponse{
+	return &model.LoginResponse{
 		Token:        tokenPair.AccessToken,
 		RefreshToken: tokenPair.RefreshToken,
 		User:         user.ToDTO(),

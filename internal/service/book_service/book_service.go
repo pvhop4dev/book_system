@@ -1,8 +1,7 @@
 package book_service
 
 import (
-	"book_system/internal/model/dto"
-	"book_system/internal/model/entity"
+	"book_system/internal/model"
 	"book_system/internal/repository"
 	"book_system/internal/service"
 	"context"
@@ -23,7 +22,7 @@ func NewBookService(repo repository.IBookRepository) service.IBookService {
 }
 
 // CreateBook creates a new book
-func (s *bookService) CreateBook(ctx context.Context, req *dto.CreateBookRequest) (*dto.BookResponse, error) {
+func (s *bookService) CreateBook(ctx context.Context, req *model.CreateBookRequest) (*model.BookResponse, error) {
 	// Check if book with same ISBN already exists
 	exists, err := s.repo.ExistsByISBN(ctx, req.ISBN)
 	if err != nil {
@@ -34,7 +33,7 @@ func (s *bookService) CreateBook(ctx context.Context, req *dto.CreateBookRequest
 	}
 
 	// Create new book entity
-	book := &entity.Book{
+	book := &model.Book{
 		Title:       req.Title,
 		Author:      req.Author,
 		Description: req.Description,
@@ -54,7 +53,7 @@ func (s *bookService) CreateBook(ctx context.Context, req *dto.CreateBookRequest
 }
 
 // GetBookByID gets a book by ID
-func (s *bookService) GetBookByID(ctx context.Context, id string) (*dto.BookResponse, error) {
+func (s *bookService) GetBookByID(ctx context.Context, id string) (*model.BookResponse, error) {
 	bookID, err := uuid.Parse(id)
 	if err != nil {
 		return nil, fmt.Errorf("invalid book ID format: %v", err)
@@ -69,7 +68,7 @@ func (s *bookService) GetBookByID(ctx context.Context, id string) (*dto.BookResp
 }
 
 // ListBooks gets a paginated list of books
-func (s *bookService) ListBooks(ctx context.Context, page, pageSize int, filters map[string]interface{}) (*dto.BookListResponse, error) {
+func (s *bookService) ListBooks(ctx context.Context, page, pageSize int, filters map[string]interface{}) (*model.BookListResponse, error) {
 	if page < 1 {
 		page = 1
 	}
@@ -83,16 +82,16 @@ func (s *bookService) ListBooks(ctx context.Context, page, pageSize int, filters
 	}
 
 	// Convert to DTOs
-	bookDTOs := make([]*dto.BookResponse, len(books))
+	bookDTOs := make([]*model.BookResponse, len(books))
 	for i, book := range books {
 		bookDTOs[i] = book.ToDTO()
 	}
 
 	totalPage := int((total + int64(pageSize) - 1) / int64(pageSize))
 
-	return &dto.BookListResponse{
+	return &model.BookListResponse{
 		Data: bookDTOs,
-		Pagination: dto.Pagination{
+		Pagination: model.Pagination{
 			Page:      page,
 			PageSize:  pageSize,
 			Total:     total,
@@ -102,7 +101,7 @@ func (s *bookService) ListBooks(ctx context.Context, page, pageSize int, filters
 }
 
 // UpdateBook updates a book
-func (s *bookService) UpdateBook(ctx context.Context, id string, req *dto.UpdateBookRequest) (*dto.BookResponse, error) {
+func (s *bookService) UpdateBook(ctx context.Context, id string, req *model.UpdateBookRequest) (*model.BookResponse, error) {
 	bookID, err := uuid.Parse(id)
 	if err != nil {
 		return nil, fmt.Errorf("invalid book ID format: %v", err)

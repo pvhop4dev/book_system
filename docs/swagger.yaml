@@ -1,15 +1,15 @@
 basePath: /api/v1
 definitions:
-  dto.BookListResponse:
+  model.BookListResponse:
     properties:
       data:
         items:
-          $ref: '#/definitions/dto.BookResponse'
+          $ref: '#/definitions/model.BookResponse'
         type: array
       pagination:
-        $ref: '#/definitions/dto.Pagination'
+        $ref: '#/definitions/model.Pagination'
     type: object
-  dto.BookResponse:
+  model.BookResponse:
     properties:
       author:
         type: string
@@ -34,7 +34,7 @@ definitions:
       updated_at:
         type: string
     type: object
-  dto.CreateBookRequest:
+  model.CreateBookRequest:
     properties:
       author:
         maxLength: 255
@@ -64,7 +64,7 @@ definitions:
     - published_at
     - title
     type: object
-  dto.LoginRequest:
+  model.LoginRequest:
     properties:
       email:
         type: string
@@ -74,16 +74,16 @@ definitions:
     - email
     - password
     type: object
-  dto.LoginResponse:
+  model.LoginResponse:
     properties:
       refresh_token:
         type: string
       token:
         type: string
       user:
-        $ref: '#/definitions/dto.User'
+        $ref: '#/definitions/model.User'
     type: object
-  dto.Pagination:
+  model.Pagination:
     properties:
       page:
         type: integer
@@ -94,12 +94,12 @@ definitions:
       total_page:
         type: integer
     type: object
-  dto.RefreshTokenRequest:
+  model.RefreshTokenRequest:
     properties:
       refresh_token:
         type: string
     type: object
-  dto.RegisterRequest:
+  model.RegisterRequest:
     properties:
       email:
         type: string
@@ -118,14 +118,14 @@ definitions:
     - password
     - username
     type: object
-  dto.RegisterResponse:
+  model.RegisterResponse:
     properties:
       token:
         type: string
       user:
-        $ref: '#/definitions/dto.User'
+        $ref: '#/definitions/model.User'
     type: object
-  dto.UpdateBookRequest:
+  model.UpdateBookRequest:
     properties:
       author:
         maxLength: 255
@@ -149,7 +149,7 @@ definitions:
         minLength: 1
         type: string
     type: object
-  dto.UpdateUserRequest:
+  model.UpdateUserRequest:
     properties:
       avatar:
         type: string
@@ -165,7 +165,7 @@ definitions:
         - user
         type: string
     type: object
-  dto.User:
+  model.User:
     properties:
       avatar:
         type: string
@@ -252,14 +252,14 @@ paths:
         name: input
         required: true
         schema:
-          $ref: '#/definitions/dto.LoginRequest'
+          $ref: '#/definitions/model.LoginRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/dto.LoginResponse'
+            $ref: '#/definitions/model.LoginResponse'
         "400":
           description: Bad Request
           schema:
@@ -284,14 +284,14 @@ paths:
         name: input
         required: true
         schema:
-          $ref: '#/definitions/dto.RefreshTokenRequest'
+          $ref: '#/definitions/model.RefreshTokenRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/dto.LoginResponse'
+            $ref: '#/definitions/model.LoginResponse'
         "400":
           description: Bad Request
           schema:
@@ -316,14 +316,14 @@ paths:
         name: input
         required: true
         schema:
-          $ref: '#/definitions/dto.RegisterRequest'
+          $ref: '#/definitions/model.RegisterRequest'
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/dto.RegisterResponse'
+            $ref: '#/definitions/model.RegisterResponse'
         "400":
           description: Bad Request
           schema:
@@ -365,7 +365,7 @@ paths:
             - $ref: '#/definitions/response.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/dto.BookListResponse'
+                  $ref: '#/definitions/model.BookListResponse'
               type: object
         "400":
           description: Invalid query parameters
@@ -388,7 +388,7 @@ paths:
         name: input
         required: true
         schema:
-          $ref: '#/definitions/dto.CreateBookRequest'
+          $ref: '#/definitions/model.CreateBookRequest'
       produces:
       - application/json
       responses:
@@ -399,7 +399,7 @@ paths:
             - $ref: '#/definitions/response.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/dto.BookResponse'
+                  $ref: '#/definitions/model.BookResponse'
               type: object
         "400":
           description: Invalid input
@@ -469,7 +469,7 @@ paths:
             - $ref: '#/definitions/response.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/dto.BookResponse'
+                  $ref: '#/definitions/model.BookResponse'
               type: object
         "400":
           description: Invalid book ID
@@ -501,7 +501,7 @@ paths:
         name: book
         required: true
         schema:
-          $ref: '#/definitions/dto.UpdateBookRequest'
+          $ref: '#/definitions/model.UpdateBookRequest'
       produces:
       - application/json
       responses:
@@ -512,7 +512,7 @@ paths:
             - $ref: '#/definitions/response.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/dto.BookResponse'
+                  $ref: '#/definitions/model.BookResponse'
               type: object
         "400":
           description: Invalid input
@@ -690,7 +690,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/dto.User'
+            $ref: '#/definitions/model.User'
         "401":
           description: Unauthorized
           schema:
@@ -716,14 +716,14 @@ paths:
         name: input
         required: true
         schema:
-          $ref: '#/definitions/dto.UpdateUserRequest'
+          $ref: '#/definitions/model.UpdateUserRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/dto.User'
+            $ref: '#/definitions/model.User'
         "400":
           description: Bad Request
           schema:

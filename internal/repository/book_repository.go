@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"book_system/internal/model/entity"
+	"book_system/internal/model"
 	"context"
 
 	"github.com/google/uuid"
@@ -20,13 +20,13 @@ func NewBookRepository(db *gorm.DB) IBookRepository {
 }
 
 // Create saves a new book
-func (r *bookRepository) Create(ctx context.Context, book *entity.Book) error {
+func (r *bookRepository) Create(ctx context.Context, book *model.Book) error {
 	return r.db.WithContext(ctx).Create(book).Error
 }
 
 // FindByID finds a book by ID
-func (r *bookRepository) FindByID(ctx context.Context, id uuid.UUID) (*entity.Book, error) {
-	var book entity.Book
+func (r *bookRepository) FindByID(ctx context.Context, id uuid.UUID) (*model.Book, error) {
+	var book model.Book
 	err := r.db.WithContext(ctx).First(&book, "id = ?", id).Error
 	if err != nil {
 		return nil, err
@@ -35,14 +35,14 @@ func (r *bookRepository) FindByID(ctx context.Context, id uuid.UUID) (*entity.Bo
 }
 
 // FindAll returns a paginated list of books
-func (r *bookRepository) FindAll(ctx context.Context, page, pageSize int, filters map[string]interface{}) ([]*entity.Book, int64, error) {
-	var books []*entity.Book
+func (r *bookRepository) FindAll(ctx context.Context, page, pageSize int, filters map[string]interface{}) ([]*model.Book, int64, error) {
+	var books []*model.Book
 	var count int64
 
 	offset := (page - 1) * pageSize
 
 	// Start building the query
-	query := r.db.WithContext(ctx).Model(&entity.Book{})
+	query := r.db.WithContext(ctx).Model(&model.Book{})
 
 	// Apply filters if any
 	for key, value := range filters {
@@ -65,19 +65,19 @@ func (r *bookRepository) FindAll(ctx context.Context, page, pageSize int, filter
 }
 
 // Update updates a book
-func (r *bookRepository) Update(ctx context.Context, book *entity.Book) error {
+func (r *bookRepository) Update(ctx context.Context, book *model.Book) error {
 	return r.db.WithContext(ctx).Save(book).Error
 }
 
 // Delete deletes a book by ID
 func (r *bookRepository) Delete(ctx context.Context, id uuid.UUID) error {
-	return r.db.WithContext(ctx).Delete(&entity.Book{}, "id = ?", id).Error
+	return r.db.WithContext(ctx).Delete(&model.Book{}, "id = ?", id).Error
 }
 
 // ExistsByISBN checks if a book with the given ISBN exists
 func (r *bookRepository) ExistsByISBN(ctx context.Context, isbn string) (bool, error) {
 	var count int64
-	err := r.db.WithContext(ctx).Model(&entity.Book{}).
+	err := r.db.WithContext(ctx).Model(&model.Book{}).
 		Where("isbn = ?", isbn).
 		Count(&count).Error
 

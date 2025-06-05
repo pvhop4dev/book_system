@@ -1,7 +1,6 @@
-package entity
+package model
 
 import (
-	"book_system/internal/model/dto"
 	"time"
 
 	"github.com/google/uuid"
@@ -26,9 +25,8 @@ func (User) TableName() string {
 	return "users"
 }
 
-// ToDTO converts User entity to User DTO
-func (u *User) ToDTO() *dto.User {
-	return &dto.User{
+func (u *User) ToDTO() *UserResponse {
+	return &UserResponse{
 		ID:        u.ID,
 		Username:  u.Username,
 		Email:     u.Email,

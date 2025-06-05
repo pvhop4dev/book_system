@@ -1,9 +1,8 @@
 package repository
 
 import (
-	"book_system/internal/model/entity"
+	"book_system/internal/model"
 	"context"
-
 
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -21,13 +20,13 @@ func NewUserRepository(db *gorm.DB) *UserRepository {
 }
 
 // Create saves a new user
-func (r *UserRepository) Create(ctx context.Context, user *entity.User) error {
+func (r *UserRepository) Create(ctx context.Context, user *model.User) error {
 	return r.db.WithContext(ctx).Create(user).Error
 }
 
 // FindByID finds a user by ID
-func (r *UserRepository) FindByID(ctx context.Context, id uuid.UUID) (*entity.User, error) {
-	var user entity.User
+func (r *UserRepository) FindByID(ctx context.Context, id uuid.UUID) (*model.User, error) {
+	var user model.User
 	err := r.db.WithContext(ctx).First(&user, "id = ?", id).Error
 	if err != nil {
 		return nil, err
@@ -36,8 +35,8 @@ func (r *UserRepository) FindByID(ctx context.Context, id uuid.UUID) (*entity.Us
 }
 
 // FindByEmail finds a user by email
-func (r *UserRepository) FindByEmail(ctx context.Context, email string) (*entity.User, error) {
-	var user entity.User
+func (r *UserRepository) FindByEmail(ctx context.Context, email string) (*model.User, error) {
+	var user model.User
 	err := r.db.WithContext(ctx).Where("email = ?", email).First(&user).Error
 	if err != nil {
 		return nil, err
@@ -46,14 +45,14 @@ func (r *UserRepository) FindByEmail(ctx context.Context, email string) (*entity
 }
 
 // FindAll returns a paginated list of users
-func (r *UserRepository) FindAll(ctx context.Context, page, pageSize int) ([]*entity.User, int64, error) {
-	var users []*entity.User
+func (r *UserRepository) FindAll(ctx context.Context, page, pageSize int) ([]*model.User, int64, error) {
+	var users []*model.User
 	var count int64
 
 	offset := (page - 1) * pageSize
 
 	// Get total count
-	if err := r.db.Model(&entity.User{}).Count(&count).Error; err != nil {
+	if err := r.db.Model(&model.User{}).Count(&count).Error; err != nil {
 		return nil, 0, err
 	}
 
@@ -69,19 +68,19 @@ func (r *UserRepository) FindAll(ctx context.Context, page, pageSize int) ([]*en
 }
 
 // Update updates a user
-func (r *UserRepository) Update(ctx context.Context, user *entity.User) error {
+func (r *UserRepository) Update(ctx context.Context, user *model.User) error {
 	return r.db.WithContext(ctx).Save(user).Error
 }
 
 // Delete deletes a user by ID
 func (r *UserRepository) Delete(ctx context.Context, id uuid.UUID) error {
-	return r.db.WithContext(ctx).Delete(&entity.User{}, "id = ?", id).Error
+	return r.db.WithContext(ctx).Delete(&model.User{}, "id = ?", id).Error
 }
 
 // ExistsByEmail checks if a user with the given email exists
 func (r *UserRepository) ExistsByEmail(ctx context.Context, email string) (bool, error) {
 	var count int64
-	err := r.db.WithContext(ctx).Model(&entity.User{}).
+	err := r.db.WithContext(ctx).Model(&model.User{}).
 		Where("email = ?", email).
 		Count(&count).Error
 

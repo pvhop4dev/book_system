@@ -39,6 +39,9 @@ func GetMinioClient() *minio.Client {
 	return minioClient
 }
 
+func CloseMinio() {
+}
+
 // InitMinio initializes the MinIO client with configuration from viper
 func initMinio() error {
 	cfg := config.MustGet()
@@ -228,12 +231,6 @@ func GeneratePresignedURL(ctx context.Context, objectName string, expiry time.Du
 // GetDefaultBucket returns the default bucket name
 func GetDefaultBucket() string {
 	return defaultBucket
-}
-
-// Close closes the MinIO client connection
-func Close() error {
-	// MinIO client doesn't have a close method
-	return nil
 }
 
 // GetFileURL generates a URL for a single file

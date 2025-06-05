@@ -44,7 +44,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.LoginRequest"
+                            "$ref": "#/definitions/model.LoginRequest"
                         }
                     }
                 ],
@@ -52,7 +52,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/dto.LoginResponse"
+                            "$ref": "#/definitions/model.LoginResponse"
                         }
                     },
                     "400": {
@@ -92,7 +92,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.RefreshTokenRequest"
+                            "$ref": "#/definitions/model.RefreshTokenRequest"
                         }
                     }
                 ],
@@ -100,7 +100,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/dto.LoginResponse"
+                            "$ref": "#/definitions/model.LoginResponse"
                         }
                     },
                     "400": {
@@ -140,7 +140,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.RegisterRequest"
+                            "$ref": "#/definitions/model.RegisterRequest"
                         }
                     }
                 ],
@@ -148,7 +148,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/dto.RegisterResponse"
+                            "$ref": "#/definitions/model.RegisterResponse"
                         }
                     },
                     "400": {
@@ -213,7 +213,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/dto.BookListResponse"
+                                            "$ref": "#/definitions/model.BookListResponse"
                                         }
                                     }
                                 }
@@ -253,7 +253,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.CreateBookRequest"
+                            "$ref": "#/definitions/model.CreateBookRequest"
                         }
                     }
                 ],
@@ -269,7 +269,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/dto.BookResponse"
+                                            "$ref": "#/definitions/model.BookResponse"
                                         }
                                     }
                                 }
@@ -331,7 +331,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/dto.BookResponse"
+                                            "$ref": "#/definitions/model.BookResponse"
                                         }
                                     }
                                 }
@@ -384,7 +384,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.UpdateBookRequest"
+                            "$ref": "#/definitions/model.UpdateBookRequest"
                         }
                     }
                 ],
@@ -400,7 +400,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/dto.BookResponse"
+                                            "$ref": "#/definitions/model.BookResponse"
                                         }
                                     }
                                 }
@@ -730,7 +730,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/dto.User"
+                            "$ref": "#/definitions/model.User"
                         }
                     },
                     "401": {
@@ -773,7 +773,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.UpdateUserRequest"
+                            "$ref": "#/definitions/model.UpdateUserRequest"
                         }
                     }
                 ],
@@ -781,7 +781,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/dto.User"
+                            "$ref": "#/definitions/model.User"
                         }
                     },
                     "400": {
@@ -826,21 +826,21 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "dto.BookListResponse": {
+        "model.BookListResponse": {
             "type": "object",
             "properties": {
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/dto.BookResponse"
+                        "$ref": "#/definitions/model.BookResponse"
                     }
                 },
                 "pagination": {
-                    "$ref": "#/definitions/dto.Pagination"
+                    "$ref": "#/definitions/model.Pagination"
                 }
             }
         },
-        "dto.BookResponse": {
+        "model.BookResponse": {
             "type": "object",
             "properties": {
                 "author": {
@@ -878,7 +878,7 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.CreateBookRequest": {
+        "model.CreateBookRequest": {
             "type": "object",
             "required": [
                 "author",
@@ -919,7 +919,7 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.LoginRequest": {
+        "model.LoginRequest": {
             "type": "object",
             "required": [
                 "email",
@@ -934,7 +934,7 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.LoginResponse": {
+        "model.LoginResponse": {
             "type": "object",
             "properties": {
                 "refresh_token": {
@@ -944,11 +944,11 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "user": {
-                    "$ref": "#/definitions/dto.User"
+                    "$ref": "#/definitions/model.User"
                 }
             }
         },
-        "dto.Pagination": {
+        "model.Pagination": {
             "type": "object",
             "properties": {
                 "page": {
@@ -965,7 +965,7 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.RefreshTokenRequest": {
+        "model.RefreshTokenRequest": {
             "type": "object",
             "properties": {
                 "refresh_token": {
@@ -973,7 +973,7 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.RegisterRequest": {
+        "model.RegisterRequest": {
             "type": "object",
             "required": [
                 "email",
@@ -999,18 +999,18 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.RegisterResponse": {
+        "model.RegisterResponse": {
             "type": "object",
             "properties": {
                 "token": {
                     "type": "string"
                 },
                 "user": {
-                    "$ref": "#/definitions/dto.User"
+                    "$ref": "#/definitions/model.User"
                 }
             }
         },
-        "dto.UpdateBookRequest": {
+        "model.UpdateBookRequest": {
             "type": "object",
             "properties": {
                 "author": {
@@ -1044,7 +1044,7 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.UpdateUserRequest": {
+        "model.UpdateUserRequest": {
             "type": "object",
             "properties": {
                 "avatar": {
@@ -1068,7 +1068,7 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.User": {
+        "model.User": {
             "type": "object",
             "required": [
                 "email",

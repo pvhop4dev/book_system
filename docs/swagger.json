@@ -38,7 +38,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.LoginRequest"
+                            "$ref": "#/definitions/model.LoginRequest"
                         }
                     }
                 ],
@@ -46,7 +46,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/dto.LoginResponse"
+                            "$ref": "#/definitions/model.LoginResponse"
                         }
                     },
                     "400": {
@@ -86,7 +86,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.RefreshTokenRequest"
+                            "$ref": "#/definitions/model.RefreshTokenRequest"
                         }
                     }
                 ],
@@ -94,7 +94,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/dto.LoginResponse"
+                            "$ref": "#/definitions/model.LoginResponse"
                         }
                     },
                     "400": {
@@ -134,7 +134,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.RegisterRequest"
+                            "$ref": "#/definitions/model.RegisterRequest"
                         }
                     }
                 ],
@@ -142,7 +142,7 @@
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/dto.RegisterResponse"
+                            "$ref": "#/definitions/model.RegisterResponse"
                         }
                     },
                     "400": {
@@ -207,7 +207,7 @@
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/dto.BookListResponse"
+                                            "$ref": "#/definitions/model.BookListResponse"
                                         }
                                     }
                                 }
@@ -247,7 +247,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.CreateBookRequest"
+                            "$ref": "#/definitions/model.CreateBookRequest"
                         }
                     }
                 ],
@@ -263,7 +263,7 @@
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/dto.BookResponse"
+                                            "$ref": "#/definitions/model.BookResponse"
                                         }
                                     }
                                 }
@@ -325,7 +325,7 @@
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/dto.BookResponse"
+                                            "$ref": "#/definitions/model.BookResponse"
                                         }
                                     }
                                 }
@@ -378,7 +378,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.UpdateBookRequest"
+                            "$ref": "#/definitions/model.UpdateBookRequest"
                         }
                     }
                 ],
@@ -394,7 +394,7 @@
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/dto.BookResponse"
+                                            "$ref": "#/definitions/model.BookResponse"
                                         }
                                     }
                                 }
@@ -724,7 +724,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/dto.User"
+                            "$ref": "#/definitions/model.User"
                         }
                     },
                     "401": {
@@ -767,7 +767,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.UpdateUserRequest"
+                            "$ref": "#/definitions/model.UpdateUserRequest"
                         }
                     }
                 ],
@@ -775,7 +775,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/dto.User"
+                            "$ref": "#/definitions/model.User"
                         }
                     },
                     "400": {
@@ -820,21 +820,21 @@
         }
     },
     "definitions": {
-        "dto.BookListResponse": {
+        "model.BookListResponse": {
             "type": "object",
             "properties": {
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/dto.BookResponse"
+                        "$ref": "#/definitions/model.BookResponse"
                     }
                 },
                 "pagination": {
-                    "$ref": "#/definitions/dto.Pagination"
+                    "$ref": "#/definitions/model.Pagination"
                 }
             }
         },
-        "dto.BookResponse": {
+        "model.BookResponse": {
             "type": "object",
             "properties": {
                 "author": {
@@ -872,7 +872,7 @@
                 }
             }
         },
-        "dto.CreateBookRequest": {
+        "model.CreateBookRequest": {
             "type": "object",
             "required": [
                 "author",
@@ -913,7 +913,7 @@
                 }
             }
         },
-        "dto.LoginRequest": {
+        "model.LoginRequest": {
             "type": "object",
             "required": [
                 "email",
@@ -928,7 +928,7 @@
                 }
             }
         },
-        "dto.LoginResponse": {
+        "model.LoginResponse": {
             "type": "object",
             "properties": {
                 "refresh_token": {
@@ -938,11 +938,11 @@
                     "type": "string"
                 },
                 "user": {
-                    "$ref": "#/definitions/dto.User"
+                    "$ref": "#/definitions/model.User"
                 }
             }
         },
-        "dto.Pagination": {
+        "model.Pagination": {
             "type": "object",
             "properties": {
                 "page": {
@@ -959,7 +959,7 @@
                 }
             }
         },
-        "dto.RefreshTokenRequest": {
+        "model.RefreshTokenRequest": {
             "type": "object",
             "properties": {
                 "refresh_token": {
@@ -967,7 +967,7 @@
                 }
             }
         },
-        "dto.RegisterRequest": {
+        "model.RegisterRequest": {
             "type": "object",
             "required": [
                 "email",
@@ -993,18 +993,18 @@
                 }
             }
         },
-        "dto.RegisterResponse": {
+        "model.RegisterResponse": {
             "type": "object",
             "properties": {
                 "token": {
                     "type": "string"
                 },
                 "user": {
-                    "$ref": "#/definitions/dto.User"
+                    "$ref": "#/definitions/model.User"
                 }
             }
         },
-        "dto.UpdateBookRequest": {
+        "model.UpdateBookRequest": {
             "type": "object",
             "properties": {
                 "author": {
@@ -1038,7 +1038,7 @@
                 }
             }
         },
-        "dto.UpdateUserRequest": {
+        "model.UpdateUserRequest": {
             "type": "object",
             "properties": {
                 "avatar": {
@@ -1062,7 +1062,7 @@
                 }
             }
         },
-        "dto.User": {
+        "model.User": {
             "type": "object",
             "required": [
                 "email",
