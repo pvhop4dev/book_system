@@ -21,12 +21,10 @@ import (
 )
 
 func initLogger() {
-	handler := &infrastructure.CustomSourceHandler{
-		Handler: slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
-			Level:     slog.LevelInfo,
-			AddSource: false, // Tắt source mặc định
-		}),
-	}
+	handler := slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
+		Level:     slog.LevelInfo,
+		AddSource: false, // Tắt source mặc định
+	})
 
 	// Add attributes to the logger
 	logger := slog.New(handler).With(

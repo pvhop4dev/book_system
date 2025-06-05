@@ -19,6 +19,9 @@ RUN CGO_ENABLED=0 GOOS=linux go build -ldflags='-w -s' -o book-system ./cmd
 # Final stage
 FROM alpine:3.20
 
+# Set logging driver
+ENV LOG_DRIVER=local
+
 # Install runtime dependencies
 RUN apk --no-cache add tzdata ca-certificates
 
@@ -29,9 +32,10 @@ COPY --from=builder /app/book-system .
 COPY --from=builder /app/configs/ ./configs/
 COPY --from=builder /app/i18n/ ./i18n/
 COPY --from=builder /app/casbin/ ./casbin/
+COPY --from=builder /app/config.yaml ./config.yaml
 
 # Set timezone
 ENV TZ=Asia/Ho_Chi_Minh
 
-# Run the application
-CMD ["./book-system"]
+# Run the application with more detailed logging
+CMD echo "Starting Book System..." && ./book-system
