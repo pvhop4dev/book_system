@@ -60,16 +60,20 @@ func initDB() *gorm.DB {
 func initI18n() {
 	i18n.InitI18n([]string{"vi", "en"})
 }
+func initMinio() {
+	infrastructure.InitMinio()
+}
+
+func initRedis() {
+	infrastructure.InitRedis()
+}
+
 func configGin() {
 	if config.MustGet().Environment == "production" {
 		gin.SetMode(gin.ReleaseMode)
 	} else {
 		gin.SetMode(gin.DebugMode)
 	}
-}
-
-func initRedis() {
-	infrastructure.InitRedis()
 }
 
 // @title Book System API
@@ -92,10 +96,10 @@ func main() {
 	defer stop()
 
 	initI18n()
-	configGin()
 	initLogger()
 	initRedis()
-
+	initMinio()
+	configGin()
 	db := initDB()
 
 	// Tạo router và cấu hình routes

@@ -25,21 +25,22 @@ var (
 	initMinioOnce sync.Once
 )
 
-func init() {
+func InitMinio() error {
+	var err error
 	initMinioOnce.Do(func() {
-		err := InitMinio()
+		err = initMinio()
 		if err != nil {
-			log.Error().Err(err).Msg("failed to initialize MinIO client")
-			panic(err)
+			log.Error().Err(err).Msg("MinIO client initialization failed, will retry later")
 		}
 	})
+	return err
 }
 func GetMinioClient() *minio.Client {
 	return minioClient
 }
 
 // InitMinio initializes the MinIO client with configuration from viper
-func InitMinio() error {
+func initMinio() error {
 	cfg := config.MustGet()
 
 	// Initialize minio client object
@@ -48,48 +49,68 @@ func InitMinio() error {
 	secretAccessKey := cfg.Minio.SecretKey
 	useSSL := cfg.Minio.Secure
 
-	// Initialize minio client object
-	client, err := minio.New(endpoint, &minio.Options{
-		Creds:  credentials.NewStaticV4(accessKeyID, secretAccessKey, ""),
-		Secure: useSSL,
-	})
-	if err != nil {
-		return err
-	}
+	// Thêm retry mechanism
+	maxRetries := 10
+	retryDelay := 5 * time.Second
 
-	// Set global variables
-	minioClient = client
-	defaultBucket = cfg.Minio.DefaultBucket
-	returnURL = cfg.Minio.ReturnURL
+	for i := 0; i < maxRetries; i++ {
+		if i > 0 {
+			log.Info().Msgf("Attempt %d to connect to MinIO", i+1)
+			time.Sleep(retryDelay)
+		}
 
-	// Create default bucket if not exists
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-
-	exists, err := client.BucketExists(ctx, defaultBucket)
-	if err != nil {
-		return err
-	}
-
-	if !exists {
-		err = client.MakeBucket(ctx, defaultBucket, minio.MakeBucketOptions{
-			Region:        cfg.Minio.Location,
-			ObjectLocking: false,
+		client, err := minio.New(endpoint, &minio.Options{
+			Creds:  credentials.NewStaticV4(accessKeyID, secretAccessKey, ""),
+			Secure: useSSL,
 		})
 		if err != nil {
-			return err
+			log.Error().Err(err).Msg("Failed to create MinIO client")
+			continue
+		}
+
+		// Kiểm tra bucket
+		bucketExists, err := client.BucketExists(context.Background(), cfg.Minio.DefaultBucket)
+		if err != nil {
+			log.Error().Err(err).Msg("Failed to check bucket existence")
+			continue
+		}
+
+		if !bucketExists {
+			if err := client.MakeBucket(context.Background(), cfg.Minio.DefaultBucket, minio.MakeBucketOptions{}); err != nil {
+				log.Error().Err(err).Msg("Failed to create bucket")
+				continue
+			}
+			log.Info().Msgf("Bucket '%s' created successfully", cfg.Minio.DefaultBucket)
 		}
 
 		// Set bucket policy if needed
-		policy := `{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Principal":{"AWS":["*"]},"Action":["s3:GetObject"],"Resource":["arn:aws:s3:::` + defaultBucket + `/*"]}]}`
-		err = client.SetBucketPolicy(ctx, defaultBucket, policy)
-		if err != nil {
-			return err
+		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		defer cancel()
+
+		policy := `{
+			"Version": "2012-10-17",
+			"Statement": [{
+				"Effect": "Allow",
+				"Principal": {"AWS": ["*"]},
+				"Action": ["s3:GetObject"],
+				"Resource": ["arn:aws:s3:::` + cfg.Minio.DefaultBucket + `/*"]
+			}]
+		}`
+
+		if err := client.SetBucketPolicy(ctx, cfg.Minio.DefaultBucket, policy); err != nil {
+			log.Error().Err(err).Msg("Failed to set bucket policy")
+			continue
 		}
+
+		// Lưu client và cấu hình
+		minioClient = client
+		defaultBucket = cfg.Minio.DefaultBucket
+		returnURL = cfg.Minio.ReturnURL
+		log.Info().Msgf("MinIO client initialized successfully with bucket: %s", cfg.Minio.DefaultBucket)
+		return nil
 	}
 
-	log.Info().Str("bucket", defaultBucket).Msg("MinIO client initialized successfully")
-	return nil
+	return fmt.Errorf("failed to initialize MinIO client after %d attempts", maxRetries)
 }
 
 // UploadFile uploads a file to MinIO
