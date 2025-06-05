@@ -37,13 +37,13 @@
 
 # Đề xuất cải thiện
 ## Performance:
-- [ ] Cân nhắc sử dụng connection pooling
+- [x] Cân nhắc sử dụng connection pooling
 - [ ] Redis Caching
 - [ ] Gắn context vào trace-ID
 
 ## Tài liệu:
-- [ ] Thêm API documentation với Swagger
-- [ ] Viết README hướng dẫn cấu hình và chạy
+- [x] Thêm API documentation với Swagger
+- [x] Viết README hướng dẫn cấu hình và chạy
 
 ## Testing:
 - [ ] Thêm unit test và integration test
@@ -52,6 +52,7 @@
 ## Cấu hình:
 - [ ] Sử dụng environment variables thay vì file config cứng
 - [ ] Thêm validation cho cấu hình
+- [ ] Casbin with MySQL
 
 ## Giám sát:
 - [ ] Thêm trace-ID for restapi, grpc
@@ -63,3 +64,14 @@
 - [ ] Thêm rate limiting
 - [ ] Xử lý CORS đúng cách
 - [ ] Validate input kỹ hơn
+- [ ] Thêm authorities vào token, frontend sẽ dựa vào đó để tạo các nút, component theo authorities
+- [ ] Thêm các API để quản lý các authorities
+- [ ] Thêm các API để quản lý các roles
+- [ ] Thêm các API để quản lý các policies
+- [ ] Thêm các API để quản lý các users
+- [ ] Thêm các API để quản lý các books
+- [ ] Thêm các API để quản lý các categories
+- [ ] Thêm các API để quản lý các authors
+- [ ] Thêm các API để quản lý các publishers
+- [ ] Thêm các API để quản lý các orders
+- [ ] Thêm các API để quản lý các order items
