@@ -4,12 +4,20 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"os"
 	"path/filepath"
 	"runtime"
 )
 
 type CustomSourceHandler struct {
 	Handler slog.Handler
+}
+
+func NewCustomSourceHandler() slog.Handler {
+	return &CustomSourceHandler{slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
+		Level:     slog.LevelInfo,
+		AddSource: false,
+	})}
 }
 
 func (h *CustomSourceHandler) Enabled(ctx context.Context, level slog.Level) bool {
