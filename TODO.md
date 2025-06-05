@@ -36,6 +36,10 @@
 - Thiếu mô tả chi tiết về các API
 
 # Đề xuất cải thiện
+## Functionality
+- [ ] pre-signed URL (rate-limit, check file type và size, validation về tên file, thêm bucket policy, đảm bảo file đúng content-type như đã khai báo)
+- [ ] Thêm context withTimeout
+- [ ] Khi globalrecover thì thêm thông báo tele hoặc email
 ## Performance:
 - [x] Cân nhắc sử dụng connection pooling
 - [ ] Redis Caching
@@ -70,11 +74,4 @@
 - [ ] Thêm authorities vào token, frontend sẽ dựa vào đó để tạo các nút, component theo authorities
 - [ ] Thêm các API để quản lý các authorities
 - [ ] Thêm các API để quản lý các roles
-- [ ] Thêm các API để quản lý các policies
-- [ ] Thêm các API để quản lý các users
-- [ ] Thêm các API để quản lý các books
-- [ ] Thêm các API để quản lý các categories
-- [ ] Thêm các API để quản lý các authors
-- [ ] Thêm các API để quản lý các publishers
-- [ ] Thêm các API để quản lý các orders
-- [ ] Thêm các API để quản lý các order items
+
