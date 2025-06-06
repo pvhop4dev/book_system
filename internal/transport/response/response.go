@@ -10,13 +10,12 @@ import (
 // @name Response
 // @Description Standard API response format
 type Response struct {
-    Code    int         `json:"code" swaggertype:"integer"`
-    Message string      `json:"message" swaggertype:"string"`
-    Data    interface{} `json:"data,omitempty" swaggertype:"object"`
+	Code    int         `json:"code" swaggertype:"integer"`
+	Message string      `json:"message" swaggertype:"string"`
+	Data    any `json:"data,omitempty" swaggertype:"object"`
 }
 
-
-func JSON(c *gin.Context, code int, message string, data interface{}) {
+func JSON(c *gin.Context, code int, message string, data any) {
 	c.JSON(code, Response{
 		Code:    code,
 		Message: message,
@@ -24,11 +23,11 @@ func JSON(c *gin.Context, code int, message string, data interface{}) {
 	})
 }
 
-func Success(c *gin.Context, data interface{}) {
+func Success(c *gin.Context, data any) {
 	JSON(c, http.StatusOK, "success", data)
 }
 
-func Created(c *gin.Context, data interface{}) {
+func Created(c *gin.Context, data any) {
 	JSON(c, http.StatusCreated, "created", data)
 }
 

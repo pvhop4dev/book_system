@@ -35,7 +35,7 @@ func (r *bookRepository) FindByID(ctx context.Context, id uuid.UUID) (*model.Boo
 }
 
 // FindAll returns a paginated list of books
-func (r *bookRepository) FindAll(ctx context.Context, page, pageSize int, filters map[string]interface{}) ([]*model.Book, int64, error) {
+func (r *bookRepository) FindAll(ctx context.Context, page, pageSize int, filters map[string]any) ([]*model.Book, int64, error) {
 	var books []*model.Book
 	var count int64
 

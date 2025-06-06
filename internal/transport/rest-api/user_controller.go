@@ -41,8 +41,8 @@ func (uc *UserController) SetupAuthRoutes(router *gin.RouterGroup) {
 // @Produce  json
 // @Param input body model.RegisterRequest true "Register info"
 // @Success 201 {object} model.RegisterResponse
-// @Failure 400 {object} map[string]interface{}
-// @Failure 500 {object} map[string]interface{}
+// @Failure 400 {object} map[string]any
+// @Failure 500 {object} map[string]any
 // @Router /api/v1/auth/register [post]
 func (uc *UserController) Register(c *gin.Context) {
 	var req model.RegisterRequest
@@ -70,8 +70,8 @@ func (uc *UserController) Register(c *gin.Context) {
 // @Produce  json
 // @Param input body model.LoginRequest true "Login credentials"
 // @Success 200 {object} model.LoginResponse
-// @Failure 400 {object} map[string]interface{}
-// @Failure 401 {object} map[string]interface{}
+// @Failure 400 {object} map[string]any
+// @Failure 401 {object} map[string]any
 // @Router /api/v1/auth/login [post]
 func (uc *UserController) Login(c *gin.Context) {
 	var req model.LoginRequest
@@ -96,8 +96,8 @@ func (uc *UserController) Login(c *gin.Context) {
 // @Security BearerAuth
 // @Produce  json
 // @Success 200 {object} model.User
-// @Failure 401 {object} map[string]interface{}
-// @Failure 404 {object} map[string]interface{}
+// @Failure 401 {object} map[string]any
+// @Failure 404 {object} map[string]any
 // @Router /api/v1/users/me [get]
 func (uc *UserController) GetUserProfile(c *gin.Context) {
 	userID, exists := c.Get("userID")
@@ -124,8 +124,8 @@ func (uc *UserController) GetUserProfile(c *gin.Context) {
 // @Produce  json
 // @Param input body model.UpdateUserRequest true "User update info"
 // @Success 200 {object} model.User
-// @Failure 400 {object} map[string]interface{}
-// @Failure 401 {object} map[string]interface{}
+// @Failure 400 {object} map[string]any
+// @Failure 401 {object} map[string]any
 // @Router /api/v1/users/me [put]
 func (uc *UserController) UpdateUserProfile(c *gin.Context) {
 	userID, exists := c.Get("userID")
@@ -157,8 +157,8 @@ func (uc *UserController) UpdateUserProfile(c *gin.Context) {
 // @Produce  json
 // @Param page query int false "Page number" default(1)
 // @Param page_size query int false "Page size" default(10)
-// @Success 200 {object} map[string]interface{}
-// @Failure 401 {object} map[string]interface{}
+// @Success 200 {object} map[string]any
+// @Failure 401 {object} map[string]any
 // @Router /api/v1/users [get]
 func (uc *UserController) ListUsers(c *gin.Context) {
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
@@ -189,8 +189,8 @@ func (uc *UserController) ListUsers(c *gin.Context) {
 // @Produce  json
 // @Param input body model.RefreshTokenRequest true "Refresh token"
 // @Success 200 {object} model.LoginResponse
-// @Failure 400 {object} map[string]interface{}
-// @Failure 401 {object} map[string]interface{}
+// @Failure 400 {object} map[string]any
+// @Failure 401 {object} map[string]any
 // @Router /api/v1/auth/refresh [post]
 func (uc *UserController) RefreshToken(c *gin.Context) {
 	var req model.RefreshTokenRequest

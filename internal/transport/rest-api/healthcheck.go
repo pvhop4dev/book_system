@@ -30,9 +30,9 @@ type CheckDetail struct {
 
 // HealthConfig holds the configuration for health check
 type HealthConfig struct {
-	DB          interface{}
-	RedisClient interface{}
-	MinioClient interface{}
+	DB          any
+	RedisClient any
+	MinioClient any
 	Version     string
 	StartTime   time.Time
 }
@@ -40,7 +40,7 @@ type HealthConfig struct {
 var healthConfig *HealthConfig
 
 // InitHealthCheck initializes health check configuration
-func InitHealthCheck(db, redisClient, minioClient interface{}, version string) {
+func InitHealthCheck(db, redisClient, minioClient any, version string) {
 	healthConfig = &HealthConfig{
 		DB:          db,
 		RedisClient: redisClient,
@@ -125,7 +125,7 @@ func healthCheckHandler(c *gin.Context, livenessOnly bool, readinessOnly bool) {
 	// Check MinIO connection if not liveness-only check
 	if !livenessOnly && healthConfig.MinioClient != nil {
 		if mc, ok := healthConfig.MinioClient.(interface {
-			ListBuckets(context.Context) (interface{}, error)
+			ListBuckets(context.Context) (any, error)
 		}); ok {
 			start := time.Now()
 			detail := CheckDetail{Status: "UP"}

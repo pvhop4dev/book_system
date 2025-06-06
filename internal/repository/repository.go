@@ -40,7 +40,7 @@ type IBookRepository interface {
 	FindByID(ctx context.Context, id uuid.UUID) (*model.Book, error)
 
 	// FindAll returns a paginated list of books
-	FindAll(ctx context.Context, page, pageSize int, filters map[string]interface{}) ([]*model.Book, int64, error)
+	FindAll(ctx context.Context, page, pageSize int, filters map[string]any) ([]*model.Book, int64, error)
 
 	// Update updates a book
 	Update(ctx context.Context, book *model.Book) error

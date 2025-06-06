@@ -122,7 +122,7 @@ func (c *BookController) ListBooks(ctx *gin.Context) {
 	pageSize, _ := strconv.Atoi(ctx.DefaultQuery("page_size", "10"))
 
 	// Build filters
-	filters := make(map[string]interface{})
+	filters := make(map[string]any)
 	if author := ctx.Query("author"); author != "" {
 		filters["author = ?"] = author
 	}

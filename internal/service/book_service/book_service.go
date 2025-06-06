@@ -68,7 +68,7 @@ func (s *bookService) GetBookByID(ctx context.Context, id string) (*model.BookRe
 }
 
 // ListBooks gets a paginated list of books
-func (s *bookService) ListBooks(ctx context.Context, page, pageSize int, filters map[string]interface{}) (*model.BookListResponse, error) {
+func (s *bookService) ListBooks(ctx context.Context, page, pageSize int, filters map[string]any) (*model.BookListResponse, error) {
 	if page < 1 {
 		page = 1
 	}

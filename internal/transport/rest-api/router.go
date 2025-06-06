@@ -34,13 +34,13 @@ func (r *Router) SetupRoutes(router *gin.Engine) {
 	}
 
 	// Get Redis client if available
-	var redisClient interface{} = nil
+	var redisClient any = nil
 	if r := infrastructure.GetRedis(); r != nil {
 		redisClient = r
 	}
 
 	// Get MinIO client if available
-	var minioClient interface{} = nil
+	var minioClient any = nil
 	if m := infrastructure.GetMinioClient(); m != nil {
 		minioClient = m
 	}

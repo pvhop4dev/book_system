@@ -45,7 +45,7 @@ type IBookService interface {
 	// GetBookByID gets a book by ID
 	GetBookByID(ctx context.Context, id string) (*model.BookResponse, error)
 	// ListBooks gets a paginated list of books
-	ListBooks(ctx context.Context, page, pageSize int, filters map[string]interface{}) (*model.BookListResponse, error)
+	ListBooks(ctx context.Context, page, pageSize int, filters map[string]any) (*model.BookListResponse, error)
 	// UpdateBook updates a book
 	UpdateBook(ctx context.Context, id string, req *model.UpdateBookRequest) (*model.BookResponse, error)
 	// DeleteBook deletes a book
