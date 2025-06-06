@@ -2,43 +2,65 @@ package infrastructure
 
 import (
 	"context"
-	"fmt"
 	"log/slog"
 	"os"
-	"path/filepath"
-	"runtime"
 )
 
-type CustomSourceHandler struct {
-	Handler slog.Handler
+type Logger struct {
+	*slog.Logger
 }
 
-func NewCustomSourceHandler() slog.Handler {
-	return &CustomSourceHandler{slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
-		Level:     slog.LevelInfo,
-		AddSource: false,
-	})}
-}
+// New creates a new logger instance with the specified log level
+func New(level slog.Level) *Logger {
+	handler := slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
+		Level:     level,
+		AddSource: true,
+	})
 
-func (h *CustomSourceHandler) Enabled(ctx context.Context, level slog.Level) bool {
-	return h.Handler.Enabled(ctx, level)
-}
+	logger := slog.New(handler)
+	slog.SetDefault(logger)
 
-func (h *CustomSourceHandler) Handle(ctx context.Context, r slog.Record) error {
-	if r.PC != 0 {
-		fs := runtime.CallersFrames([]uintptr{r.PC})
-		f, _ := fs.Next()
-		// Format: cmd/main.go:42
-		source := filepath.Base(filepath.Dir(f.File)) + "/" + filepath.Base(f.File) + ":" + fmt.Sprint(f.Line)
-		r.AddAttrs(slog.String("source", source))
+	return &Logger{
+		Logger: logger,
 	}
-	return h.Handler.Handle(ctx, r)
 }
 
-func (h *CustomSourceHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
-	return &CustomSourceHandler{h.Handler.WithAttrs(attrs)}
+// WithContext adds context fields to the logger
+func (l *Logger) WithContext(ctx context.Context) *slog.Logger {
+	// Add any context-specific fields here
+	// For example, request ID, user ID, etc.
+	return l.Logger
 }
 
-func (h *CustomSourceHandler) WithGroup(name string) slog.Handler {
-	return &CustomSourceHandler{h.Handler.WithGroup(name)}
+// With adds key-value pairs to the logger
+func (l *Logger) With(args ...any) *Logger {
+	return &Logger{
+		Logger: l.Logger.With(args...),
+	}
+}
+
+// Debug logs a debug message with optional key-value pairs
+func (l *Logger) Debug(msg string, args ...any) {
+	l.Logger.Debug(msg, args...)
+}
+
+// Info logs an info message with optional key-value pairs
+func (l *Logger) Info(msg string, args ...any) {
+	l.Logger.Info(msg, args...)
+}
+
+// Warn logs a warning message with optional key-value pairs
+func (l *Logger) Warn(msg string, args ...any) {
+	l.Logger.Warn(msg, args...)
+}
+
+// Error logs an error message with optional key-value pairs
+func (l *Logger) Error(msg string, args ...any) {
+	l.Logger.Error(msg, args...)
+}
+
+// Fatal logs a fatal message and exits the application
+func (l *Logger) Fatal(msg string, args ...any) {
+	l.Logger.Error(msg, args...)
+	os.Exit(1)
 }

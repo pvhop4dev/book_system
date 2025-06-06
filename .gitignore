@@ -38,6 +38,9 @@ debug/
 
 # Log files
 *.log
+loki_data/
+grafana_data/
+/tmp/positions.yaml
 
 # OS generated files
 .DS_Store

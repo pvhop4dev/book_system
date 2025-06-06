@@ -20,17 +20,25 @@ import (
 	"gorm.io/gorm"
 )
 
-func initLogger() {
-	handler := infrastructure.NewCustomSourceHandler()
+func initLogger() *infrastructure.Logger {
+	// Initialize logger with debug level in development, info in production
+	logLevel := slog.LevelInfo
+	if config.MustGet().Environment != "production" {
+		logLevel = slog.LevelDebug
+	}
 
-	// Add attributes to the logger
-	logger := slog.New(handler).With(
+	// Create new logger instance
+	log := infrastructure.New(logLevel).With(
 		slog.String("app", "book_system"),
 		slog.String("environment", config.MustGet().Environment),
 	)
 
-	// Set the default logger
-	slog.SetDefault(logger)
+	// Log startup information
+	log.Info("Logger initialized",
+		"level", logLevel.String(),
+	)
+
+	return log
 }
 
 func initDB() *gorm.DB {
@@ -89,11 +97,17 @@ func main() {
 	defer stop()
 
 	initI18n()
-	initLogger()
+	log := initLogger()
 	initRedis()
 	initMinio()
 	configGin()
 	db := initDB()
+
+	// Log application startup
+	log.Info("Starting application",
+		"environment", config.MustGet().Environment,
+		"port", config.MustGet().Port,
+	)
 	defer func() {
 		slog.Info("Closing database connection")
 		infrastructure.CloseDB()
@@ -146,8 +160,7 @@ func main() {
 
 	// Dừng nhận request mới và đợi các request đang xử lý
 	if err := server.Shutdown(shutdownCtx); err != nil {
-		slog.Error("Server forced to shutdown:", "error", err)
+		log.Error("Server forced to shutdown", "error", err)
 	}
-
-	slog.Info("Server exited properly")
+	log.Info("Server exited properly")
 }
