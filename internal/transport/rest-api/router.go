@@ -56,20 +56,9 @@ func (r *Router) SetupRoutes(router *gin.Engine) {
 
 	// Global middleware
 	router.Use(middleware.GlobalRecover)
-
 	// Health check endpoints
 	healthGroup := router.Group("")
-	{
-		healthGroup.GET("/health", func(c *gin.Context) {
-			healthCheckHandler(c, false, false)
-		})
-		healthGroup.GET("/health/live", func(c *gin.Context) {
-			healthCheckHandler(c, true, false)
-		})
-		healthGroup.GET("/health/ready", func(c *gin.Context) {
-			healthCheckHandler(c, false, true)
-		})
-	}
+	SetupHealthCheckRoutes(healthGroup)
 
 	// Swagger
 	r.setupSwagger(router)
@@ -97,10 +86,13 @@ func (r *Router) SetupRoutes(router *gin.Engine) {
 
 	// Public routes
 	v1 := router.Group("/api/v1")
+	v1.Use(middleware.RateLimiter())
+	v1.Use(middleware.Tracing())
+	v1.Use(middleware.Cors())
+	v1.Use(middleware.CustomLogger())
 	{
 		// Auth routes
 		authGroup := v1.Group("/auth")
-		authGroup.Use(middleware.AuthMiddleware(tokenSvc))
 		userController.SetupAuthRoutes(authGroup)
 
 		// File upload routes

@@ -3,6 +3,8 @@ package restapi
 import (
 	"book_system/internal/model"
 	"book_system/internal/service"
+	"book_system/internal/transport/middleware"
+	"book_system/internal/utils"
 	"net/http"
 	"strconv"
 
@@ -45,7 +47,9 @@ func (uc *UserController) SetupAuthRoutes(router *gin.RouterGroup) {
 func (uc *UserController) Register(c *gin.Context) {
 	var req model.RegisterRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
+		errT := middleware.BadRequest
+		c.JSON(errT.Code, gin.H{"error": errT.GetMesssageI18n(utils.GetCurrentLang(c))})
+		c.Abort()
 		return
 	}
 

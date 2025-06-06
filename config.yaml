@@ -10,9 +10,9 @@ jwt:
   access-expiry: 3600  # 1 hour in seconds
   refresh-expiry: 2592000  # 30 days in seconds
 
-rate_limiter:
+ratelimiter:
   burst: 10
-  rate: 1
+  rate: 2
 
 codec:
   secret-key: 1234567890  # Change this to a secure key

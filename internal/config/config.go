@@ -91,7 +91,7 @@ func init() {
 		}
 
 		instance = &cfg
-		slog.Info("configuration loaded successfully")
+		slog.Info("configuration loaded successfully", slog.Any("config", cfg))
 	})
 }
 

@@ -153,17 +153,6 @@ func GetCurrentPartnerId(c *gin.Context) string {
 	return ""
 }
 
-func GetCurrentTraceID(c *gin.Context) string {
-	traceID, ok := c.Get("trace_id")
-	if ok {
-		return traceID.(string)
-	}
-	return ""
-}
-func SetTraceID(c *gin.Context, traceID string) {
-	c.Set("trace_id", traceID)
-}
-
 func GetCurrentProfileId(c *gin.Context) string {
 	id := c.Request.Header["Profile-Id"]
 	if len(id) > 0 {

@@ -50,6 +50,18 @@ func InitHealthCheck(db, redisClient, minioClient interface{}, version string) {
 	}
 }
 
+func SetupHealthCheckRoutes(healthGroup *gin.RouterGroup) {
+	healthGroup.GET("/health", func(c *gin.Context) {
+		healthCheckHandler(c, false, false)
+	})
+	healthGroup.GET("/health/live", func(c *gin.Context) {
+		healthCheckHandler(c, true, false)
+	})
+	healthGroup.GET("/health/ready", func(c *gin.Context) {
+		healthCheckHandler(c, false, true)
+	})
+}
+
 // healthCheckHandler handles all health check requests
 // @Summary      Health Check
 // @Description  Check if the service is healthy
@@ -161,18 +173,3 @@ func healthCheckHandler(c *gin.Context, livenessOnly bool, readinessOnly bool) {
 
 	c.JSON(statusCode, response)
 }
-
-// // HealthCheckHandler handles health check requests
-// func HealthCheckHandler(c *gin.Context) {
-// 	healthCheckHandler(c, false, false)
-// }
-
-// // LivenessHandler handles liveness check requests
-// func LivenessHandler(c *gin.Context) {
-// 	healthCheckHandler(c, true, false)
-// }
-
-// // ReadinessHandler handles readiness check requests
-// func ReadinessHandler(c *gin.Context) {
-// 	healthCheckHandler(c, false, true)
-// }
