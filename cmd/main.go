@@ -97,14 +97,14 @@ func main() {
 	defer stop()
 
 	initI18n()
-	log := initLogger()
+	initLogger()
 	initRedis()
 	initMinio()
 	configGin()
 	db := initDB()
 
 	// Log application startup
-	log.Info("Starting application",
+	slog.Info("Starting application",
 		"environment", config.MustGet().Environment,
 		"port", config.MustGet().Port,
 	)
@@ -126,7 +126,6 @@ func main() {
 	server := &http.Server{
 		Addr:    fmt.Sprintf(":%d", serverPort),
 		Handler: router,
-
 		ReadTimeout:  15 * time.Second,
 		WriteTimeout: 15 * time.Second,
 		IdleTimeout:  60 * time.Second,
@@ -160,7 +159,7 @@ func main() {
 
 	// Dừng nhận request mới và đợi các request đang xử lý
 	if err := server.Shutdown(shutdownCtx); err != nil {
-		log.Error("Server forced to shutdown", "error", err)
+		slog.Error("Server forced to shutdown", "error", err)
 	}
-	log.Info("Server exited properly")
+	slog.Info("Server exited properly")
 }

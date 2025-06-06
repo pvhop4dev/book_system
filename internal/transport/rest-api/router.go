@@ -56,6 +56,11 @@ func (r *Router) SetupRoutes(router *gin.Engine) {
 
 	// Global middleware
 	router.Use(middleware.GlobalRecover)
+	router.Use(middleware.Tracing())
+	router.Use(middleware.Cors())
+	router.Use(middleware.CustomLogger())
+	router.Use(middleware.RateLimiter())
+
 	// Health check endpoints
 	healthGroup := router.Group("")
 	SetupHealthCheckRoutes(healthGroup)
@@ -86,10 +91,6 @@ func (r *Router) SetupRoutes(router *gin.Engine) {
 
 	// Public routes
 	v1 := router.Group("/api/v1")
-	v1.Use(middleware.RateLimiter())
-	v1.Use(middleware.Tracing())
-	v1.Use(middleware.Cors())
-	v1.Use(middleware.CustomLogger())
 	{
 		// Auth routes
 		authGroup := v1.Group("/auth")
